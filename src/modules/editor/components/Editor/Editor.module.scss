@@ -2,22 +2,31 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #fafafa;
+  background-color: #f8f9fa;
 
   &__content {
     display: flex;
     flex: 1;
     overflow: hidden;
+    position: relative;
   }
 
   &__canvas {
     flex: 1;
     position: relative;
     overflow: hidden;
+    background-color: #f8f9fa;
 
     &--dragover {
-      outline: 2px dashed #2196f3;
-      outline-offset: -4px;
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 8px;
+        border: 2px dashed #339af0;
+        border-radius: 12px;
+        pointer-events: none;
+        z-index: 10;
+      }
     }
   }
 
@@ -27,12 +36,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(33, 150, 243, 0.1);
-    font-size: 18px;
+    background-color: rgba(51, 154, 240, 0.06);
+    font-size: 16px;
     font-weight: 500;
-    color: #1565c0;
+    color: #1971c2;
     pointer-events: none;
     z-index: 10;
+    border-radius: 12px;
   }
 
   &__error {
@@ -42,31 +52,37 @@
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     padding: 10px 16px;
-    background-color: #fdecea;
-    border: 1px solid #f44336;
-    border-radius: 6px;
-    color: #c62828;
+    background-color: #fff5f5;
+    border: 1px solid #ffc9c9;
+    border-radius: 10px;
+    color: #c92a2a;
     font-size: 13px;
     font-weight: 500;
-    z-index: 20;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 101;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
     white-space: nowrap;
   }
 
   &__error-close {
-    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
     border: none;
     background: none;
-    color: #c62828;
-    font-size: 16px;
+    color: #c92a2a;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
+    border-radius: 4px;
     line-height: 1;
 
     &:hover {
-      color: #b71c1c;
+      background-color: rgba(201, 42, 42, 0.1);
     }
   }
 }

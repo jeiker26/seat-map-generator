@@ -61,12 +61,48 @@ const Canvas = ({
   const [selectionRect, setSelectionRect] = useState<SelectionRect | null>(null)
   const isSelectingRef = useRef(false)
   const dragStartRef = useRef<{ seatId: string; x: number; y: number } | null>(null)
+  const seatNodeRefs = useRef<Map<string, Konva.Group>>(new Map())
 
   const isSeatDraggable = isEditable && activeTool === 'select'
+
+  const registerSeatNode = useCallback((seatId: string, node: Konva.Group | null) => {
+    if (node) {
+      seatNodeRefs.current.set(seatId, node)
+    } else {
+      seatNodeRefs.current.delete(seatId)
+    }
+  }, [])
 
   const handleSeatDragStart = useCallback((seatId: string, x: number, y: number) => {
     dragStartRef.current = { seatId, x, y }
   }, [])
+
+  const handleSeatDragMove = useCallback(
+    (seatId: string, pixelDeltaX: number, pixelDeltaY: number) => {
+      if (selectedSeats.length <= 1 || !selectedSeats.includes(seatId)) {
+        return
+      }
+      // Move all other selected seats visually by the same pixel delta
+      for (const id of selectedSeats) {
+        if (id === seatId) {
+          continue
+        }
+        const node = seatNodeRefs.current.get(id)
+        if (!node) {
+          continue
+        }
+        const seat = seatMap.seats.find((s) => s.id === id)
+        if (!seat) {
+          continue
+        }
+        const basePixelX = seat.x * dimensions.width
+        const basePixelY = seat.y * dimensions.height
+        node.x(basePixelX + pixelDeltaX)
+        node.y(basePixelY + pixelDeltaY)
+      }
+    },
+    [selectedSeats, seatMap.seats, dimensions],
+  )
 
   const handleSeatDragEnd = useCallback(
     (seatId: string, newX: number, newY: number) => {
@@ -377,9 +413,11 @@ const Canvas = ({
               category={seat.categoryId ? categoryMap.get(seat.categoryId) : undefined}
               onClick={onSeatClick}
               onDragStart={handleSeatDragStart}
+              onDragMove={handleSeatDragMove}
               onDragEnd={handleSeatDragEnd}
               onMouseEnter={onSeatHover}
               onMouseLeave={onSeatHoverEnd}
+              onNodeRef={registerSeatNode}
             />
           ))}
         </Layer>

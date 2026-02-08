@@ -11,20 +11,20 @@ describe('Editor Page', () => {
     })
 
     it('should display the toolbar', () => {
-      cy.get('button').contains('Select').should('be.visible')
-      cy.get('button').contains('Add Seat').should('be.visible')
-      cy.get('button').contains('Pan').should('be.visible')
-      cy.get('button').contains('Grid').should('be.visible')
+      cy.get('button[title*="Select"]').should('be.visible')
+      cy.get('button[title*="Add Seat"]').should('be.visible')
+      cy.get('button[title*="Pan"]').should('be.visible')
+      cy.get('button[title*="Grid"]').should('be.visible')
     })
 
     it('should display undo/redo buttons', () => {
-      cy.get('button').contains('Undo').should('be.visible').and('be.disabled')
-      cy.get('button').contains('Redo').should('be.visible').and('be.disabled')
+      cy.get('button[title*="Undo"]').should('be.visible').and('be.disabled')
+      cy.get('button[title*="Redo"]').should('be.visible').and('be.disabled')
     })
 
     it('should display export/import buttons', () => {
-      cy.get('button').contains('Export').should('be.visible')
-      cy.get('button').contains('Import').should('be.visible')
+      cy.get('button[title*="Export"]').should('be.visible')
+      cy.get('button[title*="Import"]').should('be.visible')
     })
 
     it('should show the seat properties panel with no seat selected', () => {
@@ -40,42 +40,42 @@ describe('Editor Page', () => {
   describe('Tool Selection', () => {
     it('should highlight the active tool button', () => {
       // Select tool should be active by default - verify the button has the active modifier class
-      cy.get('button').contains('Select').should('exist')
+      cy.get('button[title*="Select"]').should('exist')
     })
 
     it('should switch to Add Seat tool', () => {
-      cy.get('button').contains('Add Seat').click()
-      cy.get('button').contains('Add Seat').should('exist')
+      cy.get('button[title*="Add Seat"]').click()
+      cy.get('button[title*="Add Seat"]').should('exist')
     })
 
     it('should switch to Pan tool', () => {
-      cy.get('button').contains('Pan').click()
-      cy.get('button').contains('Pan').should('exist')
+      cy.get('button[title*="Pan"]').click()
+      cy.get('button[title*="Pan"]').should('exist')
     })
   })
 
   describe('Add Seat via Canvas Click', () => {
     it('should add a seat when clicking on canvas with Add Seat tool active', () => {
-      cy.get('button').contains('Add Seat').click()
+      cy.get('button[title*="Add Seat"]').click()
 
       // Click on the Konva stage canvas
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
 
       // After adding a seat, undo should be enabled
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
   })
 
   describe('Grid Generator', () => {
     it('should open grid generator modal when Grid tool is used', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
 
       cy.contains('Grid Generator').should('be.visible')
     })
 
     it('should display grid generator inputs with default values', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
 
       cy.get('#grid-rows').should('have.value', '5')
@@ -85,7 +85,7 @@ describe('Editor Page', () => {
     })
 
     it('should update total seats when rows or columns change', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
 
       // Use {selectall} to reliably replace values in controlled number inputs
@@ -97,7 +97,7 @@ describe('Editor Page', () => {
     })
 
     it('should generate seats and close the modal', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
 
       cy.get('#grid-rows').type('{selectall}2')
@@ -113,11 +113,11 @@ describe('Editor Page', () => {
       cy.contains('Grid Generator').should('not.exist')
 
       // Undo should now be enabled since seats were added
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
 
     it('should close grid generator when Cancel is clicked', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
 
       cy.get('button').contains('Cancel').click()
@@ -129,7 +129,7 @@ describe('Editor Page', () => {
   describe('Export / Import', () => {
     it('should export a JSON file', () => {
       // Add some seats first via grid
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-rows').should('have.value', '2')
@@ -140,7 +140,7 @@ describe('Editor Page', () => {
         .click()
 
       // Click export - file download is triggered via JS
-      cy.get('button').contains('Export').click()
+      cy.get('button[title*="Export"]').click()
     })
 
     it('should import a JSON file', () => {
@@ -164,9 +164,9 @@ describe('Editor Page', () => {
 
         // Import resets history, so Undo is disabled — but the map was replaced successfully.
         // Verify the editor is still functional by adding a new seat
-        cy.get('button').contains('Add Seat').click()
+        cy.get('button[title*="Add Seat"]').click()
         cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
-        cy.get('button').contains('Undo').should('not.be.disabled')
+        cy.get('button[title*="Undo"]').should('not.be.disabled')
       })
     })
   })
@@ -174,65 +174,65 @@ describe('Editor Page', () => {
   describe('Undo / Redo', () => {
     it('should undo the last action', () => {
       // Add a seat
-      cy.get('button').contains('Add Seat').click()
+      cy.get('button[title*="Add Seat"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
 
       // Undo should be enabled
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
 
       // Click undo
-      cy.get('button').contains('Undo').click()
+      cy.get('button[title*="Undo"]').click()
 
       // Redo should now be enabled
-      cy.get('button').contains('Redo').should('not.be.disabled')
+      cy.get('button[title*="Redo"]').should('not.be.disabled')
     })
 
     it('should redo the undone action', () => {
       // Add a seat
-      cy.get('button').contains('Add Seat').click()
+      cy.get('button[title*="Add Seat"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
 
       // Undo then redo
-      cy.get('button').contains('Undo').click()
-      cy.get('button').contains('Redo').click()
+      cy.get('button[title*="Undo"]').click()
+      cy.get('button[title*="Redo"]').click()
 
       // Undo should still be enabled after redo
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
   })
 
   describe('Keyboard Shortcuts', () => {
     it('should switch to Select tool with S key', () => {
       // First switch to a different tool
-      cy.get('button').contains('Add Seat').click()
+      cy.get('button[title*="Add Seat"]').click()
 
       // Press S key - use window keydown since the hook listens on window
       cy.get('body').trigger('keydown', { key: 's', code: 'KeyS' })
 
       // Verify Select button exists (it always does, the assertion confirms no crash)
-      cy.get('button').contains('Select').should('exist')
+      cy.get('button[title*="Select"]').should('exist')
     })
 
     it('should switch to Add Seat tool with A key', () => {
       cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA' })
-      cy.get('button').contains('Add Seat').should('exist')
+      cy.get('button[title*="Add Seat"]').should('exist')
     })
 
     it('should switch to Pan tool with P key', () => {
       cy.get('body').trigger('keydown', { key: 'p', code: 'KeyP' })
-      cy.get('button').contains('Pan').should('exist')
+      cy.get('button[title*="Pan"]').should('exist')
     })
 
     it('should undo with Ctrl+Z', () => {
       // Add a seat first
-      cy.get('button').contains('Add Seat').click()
+      cy.get('button[title*="Add Seat"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
 
       // Ctrl+Z to undo
       cy.get('body').trigger('keydown', { key: 'z', code: 'KeyZ', ctrlKey: true })
 
       // Redo should now be available
-      cy.get('button').contains('Redo').should('not.be.disabled')
+      cy.get('button[title*="Redo"]').should('not.be.disabled')
     })
 
     it('should open Category Manager with C key', () => {
@@ -260,11 +260,11 @@ describe('Editor Page', () => {
 
   describe('Background Image Controls', () => {
     it('should display the Background upload button in toolbar', () => {
-      cy.get('button').contains('Background').should('be.visible')
+      cy.get('button[title*="Upload Background"]').should('be.visible')
     })
 
     it('should not display Remove BG button when no background is set', () => {
-      cy.get('button').contains('Remove BG').should('not.exist')
+      cy.get('button[title*="Remove Background"]').should('not.exist')
     })
 
     it('should have a hidden file input for background upload', () => {
@@ -274,7 +274,7 @@ describe('Editor Page', () => {
     it('should trigger file input when Background button is clicked', () => {
       // Clicking the Background button should trigger the hidden file input
       // We can verify by checking that the button exists and is clickable
-      cy.get('button').contains('Background').click()
+      cy.get('button[title*="Upload Background"]').click()
       // File input exists (actual file dialog cannot be tested directly)
       cy.get('input[type="file"][accept="image/*"]').should('exist')
     })
@@ -290,11 +290,11 @@ describe('Editor Page', () => {
 
     it('should have width and height input elements defined in the properties component', () => {
       // Add a seat via Add Seat tool
-      cy.get('button').contains('Add Seat').click()
+      cy.get('button[title*="Add Seat"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
 
       // Undo should be enabled (seat was added)
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
 
       // The seat properties panel shows "No seat selected" because clicking on the canvas
       // stage background triggers clearSelection, not selectSeat.
@@ -325,9 +325,9 @@ describe('Editor Page', () => {
         cy.get('.konvajs-content canvas').should('exist')
 
         // Verify the editor is functional by adding a seat
-        cy.get('button').contains('Add Seat').click()
+        cy.get('button[title*="Add Seat"]').click()
         cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
-        cy.get('button').contains('Undo').should('not.be.disabled')
+        cy.get('button[title*="Undo"]').should('not.be.disabled')
       })
     })
 
@@ -349,16 +349,16 @@ describe('Editor Page', () => {
         cy.get('.konvajs-content canvas').should('exist')
 
         // The toolbar should still be functional
-        cy.get('button').contains('Select').should('be.visible')
-        cy.get('button').contains('Add Seat').should('be.visible')
+        cy.get('button[title*="Select"]').should('be.visible')
+        cy.get('button[title*="Add Seat"]').should('be.visible')
       })
     })
 
     it('should keep original map data when import validation fails', () => {
       // First, add a seat to have some state
-      cy.get('button').contains('Add Seat').click()
+      cy.get('button[title*="Add Seat"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
 
       // Now attempt to import invalid data
       cy.fixture('seatmap-invalid.json').then((invalidData) => {
@@ -375,14 +375,14 @@ describe('Editor Page', () => {
         })
 
         // Undo should still be enabled (original state preserved)
-        cy.get('button').contains('Undo').should('not.be.disabled')
+        cy.get('button[title*="Undo"]').should('not.be.disabled')
       })
     })
   })
 
   describe('Grid Generator - Seat Size', () => {
     it('should display seat width and height inputs in grid generator', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
 
       cy.get('#grid-seat-width').should('exist')
@@ -390,7 +390,7 @@ describe('Editor Page', () => {
     })
 
     it('should have default seat size values in grid generator', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
 
       cy.get('#grid-seat-width').should('have.value', '0.02')
@@ -398,7 +398,7 @@ describe('Editor Page', () => {
     })
 
     it('should allow changing seat size in grid generator', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
 
       cy.get('#grid-seat-width').type('{selectall}0.03')
@@ -411,7 +411,7 @@ describe('Editor Page', () => {
   describe('Lasso / Rectangle Selection', () => {
     it('should not pan the stage when Select tool is active (stage drag disabled)', () => {
       // The Select tool should be active by default
-      cy.get('button').contains('Select').should('exist')
+      cy.get('button[title*="Select"]').should('exist')
 
       // Get the canvas initial position, drag it, and verify it did not pan
       // (In select mode, stage.draggable is false so panning is disabled)
@@ -436,7 +436,7 @@ describe('Editor Page', () => {
 
     it('should allow panning when Pan tool is active', () => {
       // Switch to Pan tool
-      cy.get('button').contains('Pan').click()
+      cy.get('button[title*="Pan"]').click()
 
       // Canvas should still be rendered
       cy.get('.konvajs-content canvas').should('exist')
@@ -453,7 +453,7 @@ describe('Editor Page', () => {
 
     it('should select seats within a rectangle drag area', () => {
       // First generate a grid of seats so we have something to select
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}3')
       cy.get('#grid-cols').type('{selectall}3')
@@ -462,7 +462,7 @@ describe('Editor Page', () => {
         .click()
 
       // Switch to Select tool
-      cy.get('button').contains('Select').click()
+      cy.get('button[title*="Select"]').click()
 
       // Drag a rectangle over the canvas area where seats were generated
       cy.get('.konvajs-content canvas')
@@ -484,19 +484,19 @@ describe('Editor Page', () => {
         .trigger('mouseup', 300, 300, { force: true })
 
       // Editor should still be fully functional
-      cy.get('button').contains('Select').should('be.visible')
-      cy.get('button').contains('Add Seat').should('be.visible')
+      cy.get('button[title*="Select"]').should('be.visible')
+      cy.get('button[title*="Add Seat"]').should('be.visible')
       cy.get('.konvajs-content canvas').should('exist')
     })
 
     it('should clear selection when clicking on empty canvas with Select tool', () => {
       // Add a seat
-      cy.get('button').contains('Add Seat').click()
+      cy.get('button[title*="Add Seat"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
 
       // Switch to Select tool
-      cy.get('button').contains('Select').click()
+      cy.get('button[title*="Select"]').click()
 
       // Click on empty canvas area — should clear selection (handled by onStageClick)
       cy.get('.konvajs-content canvas').first().click(100, 100, { force: true })
@@ -508,8 +508,8 @@ describe('Editor Page', () => {
 
   describe('Background Lock / Unlock', () => {
     it('should not display Lock/Unlock BG button when no background is set', () => {
-      cy.get('button').contains('Unlock BG').should('not.exist')
-      cy.get('button').contains('Lock BG').should('not.exist')
+      cy.get('button[title*="Unlock Background"]').should('not.exist')
+      cy.get('button[title*="Lock Background"]').should('not.exist')
     })
 
     it('should display Unlock BG button after importing a seatmap with a background', () => {
@@ -527,10 +527,10 @@ describe('Editor Page', () => {
         })
 
         // Background is locked by default, so button says "Unlock BG"
-        cy.get('button').contains('Unlock BG').should('be.visible')
+        cy.get('button[title*="Unlock Background"]').should('be.visible')
 
         // Remove BG button should also be visible
-        cy.get('button').contains('Remove BG').should('be.visible')
+        cy.get('button[title*="Remove Background"]').should('be.visible')
       })
     })
 
@@ -549,21 +549,21 @@ describe('Editor Page', () => {
         })
 
         // Initially locked — shows "Unlock BG"
-        cy.get('button').contains('Unlock BG').should('be.visible')
+        cy.get('button[title*="Unlock Background"]').should('be.visible')
 
         // Click to unlock
-        cy.get('button').contains('Unlock BG').click()
+        cy.get('button[title*="Unlock Background"]').click()
 
         // Now unlocked — shows "Lock BG"
-        cy.get('button').contains('Lock BG').should('be.visible')
-        cy.get('button').contains('Unlock BG').should('not.exist')
+        cy.get('button[title*="Lock Background"]').should('be.visible')
+        cy.get('button[title*="Unlock Background"]').should('not.exist')
 
         // Click to lock again
-        cy.get('button').contains('Lock BG').click()
+        cy.get('button[title*="Lock Background"]').click()
 
         // Back to locked — shows "Unlock BG"
-        cy.get('button').contains('Unlock BG').should('be.visible')
-        cy.get('button').contains('Lock BG').should('not.exist')
+        cy.get('button[title*="Unlock Background"]').should('be.visible')
+        cy.get('button[title*="Lock Background"]').should('not.exist')
       })
     })
 
@@ -582,17 +582,17 @@ describe('Editor Page', () => {
         })
 
         // Unlock BG button should exist
-        cy.get('button').contains('Unlock BG').should('be.visible')
+        cy.get('button[title*="Unlock Background"]').should('be.visible')
 
         // Remove the background
-        cy.get('button').contains('Remove BG').click()
+        cy.get('button[title*="Remove Background"]').click()
 
         // Lock/Unlock BG button should be gone
-        cy.get('button').contains('Unlock BG').should('not.exist')
-        cy.get('button').contains('Lock BG').should('not.exist')
+        cy.get('button[title*="Unlock Background"]').should('not.exist')
+        cy.get('button[title*="Lock Background"]').should('not.exist')
 
         // Remove BG button should also be gone
-        cy.get('button').contains('Remove BG').should('not.exist')
+        cy.get('button[title*="Remove Background"]').should('not.exist')
       })
     })
 
@@ -611,22 +611,22 @@ describe('Editor Page', () => {
         })
 
         // Toggle the lock — this should push to history
-        cy.get('button').contains('Unlock BG').click()
+        cy.get('button[title*="Unlock Background"]').click()
 
         // Undo should be enabled
-        cy.get('button').contains('Undo').should('not.be.disabled')
+        cy.get('button[title*="Undo"]').should('not.be.disabled')
       })
     })
   })
 
   describe('Keyboard Shortcuts Help Modal', () => {
     it('should open help modal when ? button in toolbar is clicked', () => {
-      cy.get('button').contains('?').click()
+      cy.get('button[title*="Keyboard Shortcuts"]').click()
       cy.contains('Keyboard Shortcuts').should('be.visible')
     })
 
     it('should display shortcut groups in help modal', () => {
-      cy.get('button').contains('?').click()
+      cy.get('button[title*="Keyboard Shortcuts"]').click()
       cy.contains('Tools').should('be.visible')
       cy.contains('Selection').should('be.visible')
       cy.contains('Editing').should('be.visible')
@@ -635,7 +635,7 @@ describe('Editor Page', () => {
     })
 
     it('should close help modal when Close button is clicked', () => {
-      cy.get('button').contains('?').click()
+      cy.get('button[title*="Keyboard Shortcuts"]').click()
       cy.contains('Keyboard Shortcuts').should('be.visible')
 
       cy.get('button').contains('Close').click()
@@ -648,7 +648,7 @@ describe('Editor Page', () => {
     })
 
     it('should display specific shortcut keys in help modal', () => {
-      cy.get('button').contains('?').click()
+      cy.get('button[title*="Keyboard Shortcuts"]').click()
       cy.contains('Select tool').should('be.visible')
       cy.contains('Add seat tool').should('be.visible')
       cy.contains('Pan tool').should('be.visible')
@@ -663,7 +663,7 @@ describe('Editor Page', () => {
   describe('Select All - Ctrl+A', () => {
     it('should select all seats with Ctrl+A after generating a grid', () => {
       // Generate a grid of seats
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}3')
@@ -680,7 +680,7 @@ describe('Editor Page', () => {
 
     it('should show alignment tools when multiple seats are selected', () => {
       // Generate seats
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}3')
@@ -703,7 +703,7 @@ describe('Editor Page', () => {
 
     it('should show distribution tools when multiple seats are selected', () => {
       // Generate seats
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}3')
@@ -722,7 +722,7 @@ describe('Editor Page', () => {
 
     it('should show bulk size inputs when multiple seats are selected', () => {
       // Generate seats
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}3')
@@ -743,7 +743,7 @@ describe('Editor Page', () => {
   describe('Duplicate - Ctrl+D', () => {
     it('should duplicate selected seats with Ctrl+D', () => {
       // Generate a small grid
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}1')
       cy.get('#grid-cols').type('{selectall}2')
@@ -770,7 +770,7 @@ describe('Editor Page', () => {
   describe('Delete Shortcut - Batch Delete', () => {
     it('should delete all selected seats with Delete key', () => {
       // Generate seats
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}2')
@@ -789,12 +789,12 @@ describe('Editor Page', () => {
       cy.contains('No seat selected').should('be.visible')
 
       // Undo should be enabled
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
 
     it('should undo batch delete and restore all seats', () => {
       // Generate seats
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}2')
@@ -819,7 +819,7 @@ describe('Editor Page', () => {
   describe('Escape Key', () => {
     it('should deselect all seats when Escape is pressed', () => {
       // Generate and select seats
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}2')
@@ -839,7 +839,7 @@ describe('Editor Page', () => {
   describe('Alignment Tools', () => {
     it('should align selected seats to the left', () => {
       // Generate seats
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}1')
       cy.get('#grid-cols').type('{selectall}3')
@@ -855,11 +855,11 @@ describe('Editor Page', () => {
       cy.get('button[title="Align Left"]').click()
 
       // Undo should be enabled (alignment created a history entry)
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
 
     it('should align selected seats to the right', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}1')
       cy.get('#grid-cols').type('{selectall}3')
@@ -869,11 +869,11 @@ describe('Editor Page', () => {
 
       cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
       cy.get('button[title="Align Right"]').click()
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
 
     it('should align selected seats to the top', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}3')
       cy.get('#grid-cols').type('{selectall}1')
@@ -883,11 +883,11 @@ describe('Editor Page', () => {
 
       cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
       cy.get('button[title="Align Top"]').click()
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
 
     it('should align selected seats to the bottom', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}3')
       cy.get('#grid-cols').type('{selectall}1')
@@ -897,11 +897,11 @@ describe('Editor Page', () => {
 
       cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
       cy.get('button[title="Align Bottom"]').click()
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
 
     it('should center selected seats horizontally', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}1')
       cy.get('#grid-cols').type('{selectall}3')
@@ -911,11 +911,11 @@ describe('Editor Page', () => {
 
       cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
       cy.get('button[title="Center Horizontal"]').click()
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
 
     it('should center selected seats vertically', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}3')
       cy.get('#grid-cols').type('{selectall}1')
@@ -925,14 +925,14 @@ describe('Editor Page', () => {
 
       cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
       cy.get('button[title="Center Vertical"]').click()
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
   })
 
   describe('Distribution Tools', () => {
     it('should disable distribute buttons when fewer than 3 seats are selected', () => {
       // Generate 2 seats only
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}1')
       cy.get('#grid-cols').type('{selectall}2')
@@ -950,7 +950,7 @@ describe('Editor Page', () => {
     })
 
     it('should enable distribute buttons when 3+ seats are selected', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}1')
       cy.get('#grid-cols').type('{selectall}3')
@@ -967,7 +967,7 @@ describe('Editor Page', () => {
     })
 
     it('should distribute selected seats horizontally', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}1')
       cy.get('#grid-cols').type('{selectall}4')
@@ -977,11 +977,11 @@ describe('Editor Page', () => {
 
       cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
       cy.get('button[title*="Distribute Horizontal"]').click()
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
 
     it('should distribute selected seats vertically', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}4')
       cy.get('#grid-cols').type('{selectall}1')
@@ -991,13 +991,13 @@ describe('Editor Page', () => {
 
       cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
       cy.get('button[title*="Distribute Vertical"]').click()
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
   })
 
   describe('Bulk Size Controls', () => {
     it('should display bulk width and height inputs when multiple seats are selected', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}2')
@@ -1013,7 +1013,7 @@ describe('Editor Page', () => {
     })
 
     it('should update all selected seats width via bulk input', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}2')
@@ -1023,11 +1023,11 @@ describe('Editor Page', () => {
 
       cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
       cy.get('#bulk-width').type('0.03')
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
 
     it('should update all selected seats height via bulk input', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}2')
@@ -1037,13 +1037,13 @@ describe('Editor Page', () => {
 
       cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
       cy.get('#bulk-height').type('0.04')
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
   })
 
   describe('Multi-select Delete Button', () => {
     it('should show delete button with seat count in multi-select mode', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}3')
@@ -1056,7 +1056,7 @@ describe('Editor Page', () => {
     })
 
     it('should delete all selected seats via delete button', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}2')
@@ -1072,7 +1072,7 @@ describe('Editor Page', () => {
 
   describe('Bulk Status and Category in Multi-select', () => {
     it('should display bulk status dropdown when multiple seats are selected', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}2')
@@ -1085,7 +1085,7 @@ describe('Editor Page', () => {
     })
 
     it('should change status for all selected seats via bulk dropdown', () => {
-      cy.get('button').contains('Grid').click()
+      cy.get('button[title*="Grid"]').click()
       cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
       cy.get('#grid-rows').type('{selectall}2')
       cy.get('#grid-cols').type('{selectall}2')
@@ -1095,7 +1095,7 @@ describe('Editor Page', () => {
 
       cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
       cy.get('#bulk-status').select('Reserved')
-      cy.get('button').contains('Undo').should('not.be.disabled')
+      cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
   })
 })

@@ -1,5 +1,5 @@
 import Konva from 'konva'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Group, Rect, Text } from 'react-konva'
 
 import { MIN_FONT_SIZE, STATUS_OPACITY } from '../../../core/constants'
@@ -27,9 +27,11 @@ interface SeatProps {
   category?: SeatCategory
   onClick?: (_seatId: string, _event?: MouseEvent) => void
   onDragStart?: (_seatId: string, _x: number, _y: number) => void
+  onDragMove?: (_seatId: string, _pixelDeltaX: number, _pixelDeltaY: number) => void
   onDragEnd?: (_seatId: string, _x: number, _y: number) => void
   onMouseEnter?: (_seatId: string, _pixelX: number, _pixelY: number) => void
   onMouseLeave?: (_seatId: string) => void
+  onNodeRef?: (_seatId: string, _node: Konva.Group | null) => void
 }
 
 const SeatComponent = ({
@@ -43,15 +45,29 @@ const SeatComponent = ({
   category,
   onClick,
   onDragStart,
+  onDragMove,
   onDragEnd,
   onMouseEnter,
   onMouseLeave,
+  onNodeRef,
 }: SeatProps) => {
+  const groupRef = useRef<Konva.Group>(null)
   const pixelX = seat.x * containerWidth
   const pixelY = seat.y * containerHeight
   const uniformScale = Math.min(containerWidth, containerHeight)
   const pixelW = seat.w * uniformScale
   const pixelH = seat.h * uniformScale
+
+  useEffect(() => {
+    if (onNodeRef) {
+      onNodeRef(seat.id, groupRef.current)
+    }
+    return () => {
+      if (onNodeRef) {
+        onNodeRef(seat.id, null)
+      }
+    }
+  }, [onNodeRef, seat.id])
 
   const status = seat.status || 'available'
   const opacity = STATUS_OPACITY[status] ?? 1
@@ -107,6 +123,17 @@ const SeatComponent = ({
     }
   }, [onDragStart, seat.id, seat.x, seat.y])
 
+  const handleDragMove = useCallback(
+    (e: any) => {
+      if (onDragMove) {
+        const pixelDeltaX = e.target.x() - pixelX
+        const pixelDeltaY = e.target.y() - pixelY
+        onDragMove(seat.id, pixelDeltaX, pixelDeltaY)
+      }
+    },
+    [onDragMove, seat.id, pixelX, pixelY],
+  )
+
   const handleDragEnd = useCallback(
     (e: any) => {
       if (onDragEnd) {
@@ -152,10 +179,12 @@ const SeatComponent = ({
 
   return (
     <Group
+      ref={groupRef}
       x={pixelX}
       y={pixelY}
       draggable={isDraggable}
       onDragStart={handleDragStart}
+      onDragMove={handleDragMove}
       onDragEnd={handleDragEnd}
       onClick={handleClick}
       onTap={handleTap}

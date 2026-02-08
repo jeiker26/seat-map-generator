@@ -272,17 +272,6 @@ const Editor = () => {
 
   return (
     <div className={styles.editor}>
-      <Toolbar
-        onExport={handleExport}
-        onImport={handleImport}
-        onUploadBackground={handleUploadBackground}
-        onRemoveBackground={handleRemoveBackground}
-        onOpenCategories={handleOpenCategories}
-        onToggleBackgroundLock={handleToggleBackgroundLock}
-        onOpenHelp={handleOpenHelp}
-        hasBackground={Boolean(seatMap.background?.url)}
-        isBackgroundLocked={isBackgroundLocked}
-      />
       <div className={styles.editor__content}>
         <div
           className={`${styles.editor__canvas} ${isDragOver ? styles['editor__canvas--dragover'] : ''}`}
@@ -303,6 +292,17 @@ const Editor = () => {
             onLassoSelect={handleLassoSelect}
             onBackgroundDragEnd={handleBackgroundDragEnd}
             onBackgroundTransformEnd={handleBackgroundTransformEnd}
+          />
+          <Toolbar
+            onExport={handleExport}
+            onImport={handleImport}
+            onUploadBackground={handleUploadBackground}
+            onRemoveBackground={handleRemoveBackground}
+            onOpenCategories={handleOpenCategories}
+            onToggleBackgroundLock={handleToggleBackgroundLock}
+            onOpenHelp={handleOpenHelp}
+            hasBackground={Boolean(seatMap.background?.url)}
+            isBackgroundLocked={isBackgroundLocked}
           />
           {isDragOver && <div className={styles['editor__drop-overlay']}>Drop image to set as background</div>}
           {backgroundError && (

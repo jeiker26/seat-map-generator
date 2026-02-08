@@ -1,66 +1,79 @@
 .toolbar {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 2px;
+  padding: 4px;
   background-color: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 8px 24px rgba(0, 0, 0, 0.06);
 
-  &__tools {
+  &__group {
     display: flex;
-    gap: 4px;
-  }
-
-  &__actions {
-    display: flex;
-    gap: 4px;
+    gap: 2px;
   }
 
   &__btn {
-    padding: 6px 12px;
-    border: 1px solid #d0d0d0;
-    border-radius: 4px;
-    background-color: #ffffff;
-    color: #333333;
-    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: #495057;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.12s ease;
     user-select: none;
 
     &:hover:not(:disabled) {
-      background-color: #f0f0f0;
-      border-color: #b0b0b0;
+      background-color: #f1f3f5;
+      color: #212529;
     }
 
     &--active {
-      background-color: #e3f2fd;
-      border-color: #2196f3;
-      color: #1565c0;
-      font-weight: 600;
+      background-color: #e7f5ff;
+      color: #1971c2;
+
+      &:hover:not(:disabled) {
+        background-color: #d0ebff;
+        color: #1864ab;
+      }
     }
 
     &--danger {
-      border-color: #f44336;
-      color: #f44336;
+      color: #e03131;
 
       &:hover:not(:disabled) {
-        background-color: #f44336;
-        color: #ffffff;
-        border-color: #f44336;
+        background-color: #fff5f5;
+        color: #c92a2a;
       }
     }
 
     &:disabled {
-      opacity: 0.4;
+      opacity: 0.3;
       cursor: not-allowed;
+    }
+
+    svg {
+      flex-shrink: 0;
     }
   }
 
-  &__separator {
+  &__divider {
     width: 1px;
     height: 24px;
-    background-color: #e0e0e0;
+    background-color: #dee2e6;
     margin: 0 4px;
+    flex-shrink: 0;
   }
 }
