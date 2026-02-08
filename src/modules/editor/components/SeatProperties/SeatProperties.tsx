@@ -249,7 +249,7 @@ const SeatProperties = () => {
 
   if (selectedSeats.length === 0) {
     return (
-      <div className={styles['seat-properties']}>
+      <div className={`${styles['seat-properties']} ${styles['seat-properties--empty']}`}>
         <p className={styles['seat-properties__empty']}>No seat selected</p>
       </div>
     )

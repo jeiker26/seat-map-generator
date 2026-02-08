@@ -318,8 +318,8 @@ const Editor = () => {
               </button>
             </div>
           )}
+          <SeatProperties />
         </div>
-        <SeatProperties />
       </div>
       <GridGenerator isOpen={isGridOpen} onClose={() => setIsGridOpen(false)} />
       <CategoryManager isOpen={isCategoryManagerOpen} onClose={() => setIsCategoryManagerOpen(false)} />

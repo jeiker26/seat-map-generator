@@ -1,31 +1,47 @@
+@use '@/styles/variables' as *;
+
 .seat-properties {
-  padding: 16px;
-  background-color: #ffffff;
-  border-left: 1px solid #e0e0e0;
-  width: 260px;
+  position: absolute;
+  top: $spacing-md;
+  right: $spacing-md;
+  z-index: 100;
+  width: 240px;
+  padding: $spacing-md;
+  background-color: $bg-primary;
+  border-radius: $radius-lg;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 8px 24px rgba(0, 0, 0, 0.06);
   overflow-y: auto;
+  max-height: calc(100% - #{$spacing-xl});
+
+  &--empty {
+    padding: $spacing-sm $spacing-md;
+    width: auto;
+  }
 
   &__title {
-    margin: 0 0 16px;
-    font-size: 14px;
+    margin: 0 0 $spacing-sm;
+    font-size: 13px;
     font-weight: 600;
-    color: #333333;
+    color: #343a40;
+    letter-spacing: -0.01em;
   }
 
   &__empty {
-    font-size: 13px;
-    color: #999999;
-    text-align: center;
-    padding: 24px 0;
+    font-size: 12px;
+    color: $text-disabled;
+    margin: 0;
   }
 
   &__field {
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   &__row {
     display: flex;
-    gap: 8px;
+    gap: $spacing-sm;
 
     .seat-properties__field {
       flex: 1;
@@ -34,112 +50,120 @@
 
   &__label {
     display: block;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
-    color: #666666;
-    margin-bottom: 4px;
+    color: #868e96;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
 
   &__input,
   &__select {
     width: 100%;
-    padding: 6px 8px;
-    border: 1px solid #d0d0d0;
-    border-radius: 4px;
-    font-size: 13px;
-    color: #333333;
-    background-color: #ffffff;
+    padding: 5px 8px;
+    border: 1px solid #dee2e6;
+    border-radius: $radius-sm;
+    font-size: 12px;
+    color: #343a40;
+    background-color: $bg-primary;
     box-sizing: border-box;
+    transition: border-color $transition-fast;
 
     &:focus {
       outline: none;
-      border-color: #2196f3;
-      box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+      border-color: #339af0;
+      box-shadow: 0 0 0 2px rgba(51, 154, 240, 0.15);
+    }
+
+    &:hover:not(:focus) {
+      border-color: #adb5bd;
     }
   }
 
   &__value {
-    font-size: 12px;
-    color: #666666;
-    font-family: monospace;
+    font-size: 11px;
+    color: #868e96;
+    font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
   }
 
   &__category-field {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: $spacing-sm;
   }
 
   &__category-swatch {
     display: inline-block;
-    width: 20px;
-    height: 16px;
+    width: 18px;
+    height: 14px;
     border-radius: 3px;
     border: 2px solid;
     flex-shrink: 0;
   }
 
   &__section {
-    margin-bottom: 12px;
-    padding-top: 8px;
-    border-top: 1px solid #f0f0f0;
+    margin-bottom: 10px;
+    padding-top: $spacing-sm;
+    border-top: 1px solid #f1f3f5;
   }
 
   &__section-title {
     display: block;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    color: #999999;
+    color: #adb5bd;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   &__toolbar {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px;
+    gap: 3px;
   }
 
   &__toolbar-btn {
-    padding: 4px 8px;
-    border: 1px solid #d0d0d0;
-    border-radius: 4px;
-    background-color: #ffffff;
-    color: #555555;
-    font-size: 11px;
+    padding: 3px 7px;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    background-color: $bg-primary;
+    color: #495057;
+    font-size: 10px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all $transition-fast;
     user-select: none;
     white-space: nowrap;
 
     &:hover:not(:disabled) {
-      background-color: #e3f2fd;
-      border-color: #2196f3;
-      color: #1565c0;
+      background-color: #e7f5ff;
+      border-color: #74c0fc;
+      color: #1971c2;
     }
 
     &:disabled {
-      opacity: 0.35;
+      opacity: 0.3;
       cursor: not-allowed;
     }
   }
 
   &__delete {
     width: 100%;
-    padding: 8px;
-    margin-top: 16px;
-    border: 1px solid #f44336;
-    border-radius: 4px;
-    background-color: #ffffff;
-    color: #f44336;
-    font-size: 13px;
+    padding: 6px;
+    margin-top: $spacing-sm;
+    border: 1px solid #ffc9c9;
+    border-radius: $radius-sm + 2;
+    background-color: $bg-primary;
+    color: #e03131;
+    font-size: 12px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all $transition-fast;
 
     &:hover {
-      background-color: #f44336;
-      color: #ffffff;
+      background-color: #fff5f5;
+      border-color: #e03131;
     }
   }
 }
