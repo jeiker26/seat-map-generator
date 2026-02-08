@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic'
 import { useCallback, useState } from 'react'
 
+import { DEFAULT_SEAT_SIZE, MAX_BACKGROUND_SIZE_BYTES, MAX_BACKGROUND_SIZE_MB } from '../../../core/constants'
 import { Seat, SeatMap } from '../../../core/types'
 import { useEditorState } from '../../hooks/useEditorState'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
@@ -36,6 +37,7 @@ const Editor = () => {
 
   const [isGridOpen, setIsGridOpen] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
+  const [backgroundError, setBackgroundError] = useState<string | null>(null)
 
   useKeyboardShortcuts()
 
@@ -46,13 +48,14 @@ const Editor = () => {
   const handleStageClick = useCallback(
     (x: number, y: number) => {
       if (activeTool === 'add') {
+        const seatSize = seatMap?.settings?.defaultSeatSize || DEFAULT_SEAT_SIZE
         const newSeat: Seat = {
           id: crypto.randomUUID(),
           label: `S${(seatMap?.seats.length || 0) + 1}`,
           x,
           y,
-          w: 0.02,
-          h: 0.02,
+          w: seatSize.w,
+          h: seatSize.h,
           status: 'available',
         }
         addSeat(newSeat)
@@ -111,14 +114,20 @@ const Editor = () => {
     [setSeatMap],
   )
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault()
-      setIsDragOver(false)
-      const file = e.dataTransfer.files[0]
-      if (!file || !file.type.startsWith('image/')) {
+  const processBackgroundFile = useCallback(
+    (file: File) => {
+      setBackgroundError(null)
+
+      if (!file.type.startsWith('image/')) {
+        setBackgroundError('Invalid file type. Please select an image file.')
         return
       }
+
+      if (file.size > MAX_BACKGROUND_SIZE_BYTES) {
+        setBackgroundError(`File size exceeds ${MAX_BACKGROUND_SIZE_MB}MB limit.`)
+        return
+      }
+
       const reader = new FileReader()
       reader.onload = (event) => {
         const url = event.target?.result as string
@@ -138,12 +147,47 @@ const Editor = () => {
             setSeatMap(updatedMap)
           }
         }
+        img.onerror = () => {
+          setBackgroundError('Failed to load image. The file may be corrupted.')
+        }
         img.src = url
       }
       reader.readAsDataURL(file)
     },
     [seatMap, setSeatMap],
   )
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      setIsDragOver(false)
+      const file = e.dataTransfer.files[0]
+      if (!file) {
+        return
+      }
+      processBackgroundFile(file)
+    },
+    [processBackgroundFile],
+  )
+
+  const handleUploadBackground = useCallback(
+    (file: File) => {
+      processBackgroundFile(file)
+    },
+    [processBackgroundFile],
+  )
+
+  const handleRemoveBackground = useCallback(() => {
+    if (seatMap) {
+      const updatedMap: SeatMap = {
+        ...seatMap,
+        background: { url: '', width: 0, height: 0 },
+        updatedAt: new Date().toISOString(),
+      }
+      setSeatMap(updatedMap)
+      setBackgroundError(null)
+    }
+  }, [seatMap, setSeatMap])
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -160,7 +204,13 @@ const Editor = () => {
 
   return (
     <div className={styles.editor}>
-      <Toolbar onExport={handleExport} onImport={handleImport} />
+      <Toolbar
+        onExport={handleExport}
+        onImport={handleImport}
+        onUploadBackground={handleUploadBackground}
+        onRemoveBackground={handleRemoveBackground}
+        hasBackground={Boolean(seatMap.background?.url)}
+      />
       <div className={styles.editor__content}>
         <div
           className={`${styles.editor__canvas} ${isDragOver ? styles['editor__canvas--dragover'] : ''}`}
@@ -178,6 +228,19 @@ const Editor = () => {
             onStageClick={handleStageClick}
           />
           {isDragOver && <div className={styles['editor__drop-overlay']}>Drop image to set as background</div>}
+          {backgroundError && (
+            <div className={styles['editor__error']}>
+              {backgroundError}
+              <button
+                className={styles['editor__error-close']}
+                onClick={() => setBackgroundError(null)}
+                type="button"
+                aria-label="Dismiss error"
+              >
+                x
+              </button>
+            </div>
+          )}
         </div>
         <SeatProperties />
       </div>

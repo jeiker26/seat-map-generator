@@ -24,3 +24,6 @@ export const CANVAS_DEFAULTS = {
 
 export const MAX_SEATS = 5000
 export const MAX_HISTORY_ENTRIES = 50
+export const MAX_BACKGROUND_SIZE_MB = 10
+export const MAX_BACKGROUND_SIZE_BYTES = MAX_BACKGROUND_SIZE_MB * 1024 * 1024
+export const MIN_FONT_SIZE = 8

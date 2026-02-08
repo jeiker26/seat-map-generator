@@ -22,6 +22,12 @@ export interface SeatMapSettings {
   maxSelectable?: number
   showLabels: boolean
   theme?: 'light' | 'dark'
+  defaultSeatSize?: SeatSize
+}
+
+export interface SeatSize {
+  w: number
+  h: number
 }
 
 export interface Seat {

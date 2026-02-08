@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { Group, Rect, Text } from 'react-konva'
 
+import { MIN_FONT_SIZE } from '../../../core/constants'
 import { Seat as SeatType, SeatStatus } from '../../../core/types'
 
 const STATUS_COLORS: Record<SeatStatus, string> = {
@@ -33,8 +34,9 @@ const SeatComponent = ({
 }: SeatProps) => {
   const pixelX = seat.x * containerWidth
   const pixelY = seat.y * containerHeight
-  const pixelW = seat.w * containerWidth
-  const pixelH = seat.h * containerHeight
+  const uniformScale = Math.min(containerWidth, containerHeight)
+  const pixelW = seat.w * uniformScale
+  const pixelH = seat.h * uniformScale
 
   const fillColor = useMemo(() => {
     if (isSelected) {
@@ -88,7 +90,7 @@ const SeatComponent = ({
           height={pixelH}
           align="center"
           verticalAlign="middle"
-          fontSize={Math.min(pixelW, pixelH) * 0.4}
+          fontSize={Math.max(Math.min(pixelW, pixelH) * 0.4, MIN_FONT_SIZE)}
           fill="#ffffff"
           listening={false}
         />

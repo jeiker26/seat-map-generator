@@ -40,6 +40,17 @@
       font-weight: 600;
     }
 
+    &--danger {
+      border-color: #f44336;
+      color: #f44336;
+
+      &:hover:not(:disabled) {
+        background-color: #f44336;
+        color: #ffffff;
+        border-color: #f44336;
+      }
+    }
+
     &:disabled {
       opacity: 0.4;
       cursor: not-allowed;

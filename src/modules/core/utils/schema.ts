@@ -20,10 +20,15 @@ export const seatSchema = z.object({
   metadata: z.record(z.unknown()).optional(),
 })
 
+export const seatSizeSchema = z.object({
+  w: z.number().min(0.005).max(0.5),
+  h: z.number().min(0.005).max(0.5),
+})
+
 export const seatMapBackgroundSchema = z.object({
-  url: z.string().url(),
-  width: z.number().positive(),
-  height: z.number().positive(),
+  url: z.union([z.string().url(), z.literal('')]),
+  width: z.number().nonnegative(),
+  height: z.number().nonnegative(),
   aspectRatio: z.number().positive().optional(),
 })
 
@@ -32,6 +37,7 @@ export const seatMapSettingsSchema = z.object({
   maxSelectable: z.number().positive().optional(),
   showLabels: z.boolean(),
   theme: z.enum(['light', 'dark']).optional(),
+  defaultSeatSize: seatSizeSchema.optional(),
 })
 
 export const seatMapSchema = z.object({

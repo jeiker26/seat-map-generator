@@ -34,4 +34,39 @@
     pointer-events: none;
     z-index: 10;
   }
+
+  &__error {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background-color: #fdecea;
+    border: 1px solid #f44336;
+    border-radius: 6px;
+    color: #c62828;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 20;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+  }
+
+  &__error-close {
+    padding: 0 4px;
+    border: none;
+    background: none;
+    color: #c62828;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1;
+
+    &:hover {
+      color: #b71c1c;
+    }
+  }
 }

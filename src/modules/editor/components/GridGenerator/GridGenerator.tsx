@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 
+import { DEFAULT_SEAT_SIZE } from '../../../core/constants'
 import { Seat } from '../../../core/types'
 import { useEditorState } from '../../hooks/useEditorState'
 import styles from './GridGenerator.module.scss'
@@ -19,6 +20,8 @@ const GridGenerator = ({ isOpen, onClose }: GridGeneratorProps) => {
   const [spacingX, setSpacingX] = useState(0.03)
   const [spacingY, setSpacingY] = useState(0.04)
   const [rowPrefix, setRowPrefix] = useState('A')
+  const [seatWidth, setSeatWidth] = useState(DEFAULT_SEAT_SIZE.w)
+  const [seatHeight, setSeatHeight] = useState(DEFAULT_SEAT_SIZE.h)
 
   const generateRowLabel = useCallback((index: number, prefix: string): string => {
     const charCode = prefix.charCodeAt(0) + index
@@ -34,15 +37,15 @@ const GridGenerator = ({ isOpen, onClose }: GridGeneratorProps) => {
           label: `${rowLabel}${col + 1}`,
           x: startX + col * spacingX,
           y: startY + row * spacingY,
-          w: 0.02,
-          h: 0.02,
+          w: seatWidth,
+          h: seatHeight,
           status: 'available',
         }
         addSeat(seat)
       }
     }
     onClose()
-  }, [rows, cols, startX, startY, spacingX, spacingY, rowPrefix, addSeat, onClose, generateRowLabel])
+  }, [rows, cols, startX, startY, spacingX, spacingY, rowPrefix, seatWidth, seatHeight, addSeat, onClose, generateRowLabel])
 
   if (!isOpen) {
     return null
@@ -150,6 +153,33 @@ const GridGenerator = ({ isOpen, onClose }: GridGeneratorProps) => {
               step={0.005}
               value={spacingY}
               onChange={(e) => setSpacingY(Number(e.target.value))}
+            />
+          </div>
+        </div>
+
+        <div className={styles['grid-generator__row']}>
+          <div className={styles['grid-generator__field']}>
+            <label htmlFor="grid-seat-width">Seat Width</label>
+            <input
+              id="grid-seat-width"
+              type="number"
+              min={0.005}
+              max={0.5}
+              step={0.005}
+              value={seatWidth}
+              onChange={(e) => setSeatWidth(Number(e.target.value))}
+            />
+          </div>
+          <div className={styles['grid-generator__field']}>
+            <label htmlFor="grid-seat-height">Seat Height</label>
+            <input
+              id="grid-seat-height"
+              type="number"
+              min={0.005}
+              max={0.5}
+              step={0.005}
+              value={seatHeight}
+              onChange={(e) => setSeatHeight(Number(e.target.value))}
             />
           </div>
         </div>

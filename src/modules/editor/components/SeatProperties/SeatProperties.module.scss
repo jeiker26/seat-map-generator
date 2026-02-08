@@ -23,6 +23,15 @@
     margin-bottom: 12px;
   }
 
+  &__row {
+    display: flex;
+    gap: 8px;
+
+    .seat-properties__field {
+      flex: 1;
+    }
+  }
+
   &__label {
     display: block;
     font-size: 12px;

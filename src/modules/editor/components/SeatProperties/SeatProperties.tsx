@@ -38,6 +38,30 @@ const SeatProperties = () => {
     [selectedSeat, updateSeat],
   )
 
+  const handleWidthChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (selectedSeat) {
+        const value = Number(e.target.value)
+        if (value >= 0.005 && value <= 0.5) {
+          updateSeat(selectedSeat.id, { w: value })
+        }
+      }
+    },
+    [selectedSeat, updateSeat],
+  )
+
+  const handleHeightChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (selectedSeat) {
+        const value = Number(e.target.value)
+        if (value >= 0.005 && value <= 0.5) {
+          updateSeat(selectedSeat.id, { h: value })
+        }
+      }
+    },
+    [selectedSeat, updateSeat],
+  )
+
   const handleDelete = useCallback(() => {
     selectedSeats.forEach((id) => deleteSeat(id))
     clearSelection()
@@ -99,6 +123,39 @@ const SeatProperties = () => {
         <span className={styles['seat-properties__value']}>
           x: {selectedSeat.x.toFixed(4)}, y: {selectedSeat.y.toFixed(4)}
         </span>
+      </div>
+
+      <div className={styles['seat-properties__row']}>
+        <div className={styles['seat-properties__field']}>
+          <label htmlFor="seat-width" className={styles['seat-properties__label']}>
+            Width
+          </label>
+          <input
+            id="seat-width"
+            type="number"
+            min={0.005}
+            max={0.5}
+            step={0.005}
+            value={selectedSeat.w}
+            onChange={handleWidthChange}
+            className={styles['seat-properties__input']}
+          />
+        </div>
+        <div className={styles['seat-properties__field']}>
+          <label htmlFor="seat-height" className={styles['seat-properties__label']}>
+            Height
+          </label>
+          <input
+            id="seat-height"
+            type="number"
+            min={0.005}
+            max={0.5}
+            step={0.005}
+            value={selectedSeat.h}
+            onChange={handleHeightChange}
+            className={styles['seat-properties__input']}
+          />
+        </div>
       </div>
 
       <button className={styles['seat-properties__delete']} onClick={handleDelete} type="button">
