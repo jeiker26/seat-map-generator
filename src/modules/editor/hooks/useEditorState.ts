@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 import { EditorStore, EditorTool } from '../../core/types'
-import { MapElement, Seat, SeatCategory, SeatMap } from '../../core/types'
+import { MapElement, Seat, SeatCategory, SeatMap, SeatMapBackground } from '../../core/types'
 
 const MAX_HISTORY_ENTRIES = 50
 
@@ -119,6 +119,10 @@ export const useEditorState = create<EditorStore>((set, get) => ({
     }
   },
 
+  selectSeats: (ids: string[]) => {
+    set({ selectedSeats: ids })
+  },
+
   deselectSeat: (id: string) => {
     set((state) => ({ selectedSeats: state.selectedSeats.filter((sId) => sId !== id) }))
   },
@@ -212,6 +216,17 @@ export const useEditorState = create<EditorStore>((set, get) => ({
     }
     const updatedSettings = { ...(seatMap.settings || { allowMultiSelect: true, showLabels: true }), ...settings }
     const updatedMap = { ...seatMap, settings: updatedSettings, updatedAt: new Date().toISOString() }
+    const historyData = pushToHistory(history, historyIndex, updatedMap)
+    set({ seatMap: updatedMap, ...historyData, isDirty: true })
+  },
+
+  updateBackground: (updates: Partial<SeatMapBackground>) => {
+    const { seatMap, history, historyIndex } = get()
+    if (!seatMap) {
+      return
+    }
+    const updatedBackground = { ...seatMap.background, ...updates }
+    const updatedMap = { ...seatMap, background: updatedBackground, updatedAt: new Date().toISOString() }
     const historyData = pushToHistory(history, historyIndex, updatedMap)
     set({ seatMap: updatedMap, ...historyData, isDirty: true })
   },

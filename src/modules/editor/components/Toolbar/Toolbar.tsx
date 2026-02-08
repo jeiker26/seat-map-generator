@@ -18,7 +18,9 @@ interface ToolbarProps {
   onUploadBackground?: (_file: File) => void
   onRemoveBackground?: () => void
   onOpenCategories?: () => void
+  onToggleBackgroundLock?: () => void
   hasBackground?: boolean
+  isBackgroundLocked?: boolean
 }
 
 const Toolbar = ({
@@ -27,7 +29,9 @@ const Toolbar = ({
   onUploadBackground,
   onRemoveBackground,
   onOpenCategories,
+  onToggleBackgroundLock,
   hasBackground = false,
+  isBackgroundLocked = true,
 }: ToolbarProps) => {
   const activeTool = useEditorState((s) => s.activeTool)
   const setActiveTool = useEditorState((s) => s.setActiveTool)
@@ -148,6 +152,20 @@ const Toolbar = ({
             type="button"
           >
             Remove BG
+          </button>
+        )}
+        {hasBackground && (
+          <button
+            className={`${styles.toolbar__btn} ${!isBackgroundLocked ? styles['toolbar__btn--active'] : ''}`}
+            onClick={onToggleBackgroundLock}
+            title={
+              isBackgroundLocked
+                ? 'Unlock Background (make movable/resizable)'
+                : 'Lock Background (prevent moving/resizing)'
+            }
+            type="button"
+          >
+            {isBackgroundLocked ? 'Unlock BG' : 'Lock BG'}
           </button>
         )}
         <input

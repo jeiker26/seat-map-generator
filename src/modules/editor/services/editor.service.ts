@@ -1,23 +1,41 @@
 import { SeatMap } from '../../core/types'
+import { seatMapSchema } from '../../core/utils/schema'
 
 export const exportToJson = (seatMap: SeatMap): string => {
   return JSON.stringify(seatMap, null, 2)
 }
 
-export const importFromJson = (json: string): SeatMap | null => {
+export interface ImportResult {
+  success: true
+  data: SeatMap
+}
+
+export interface ImportError {
+  success: false
+  errors: string[]
+}
+
+export const importFromJson = (json: string): ImportResult | ImportError => {
+  let parsed: unknown
   try {
-    const parsed = JSON.parse(json) as SeatMap
-
-    if (!parsed.id || !parsed.version || !Array.isArray(parsed.seats)) {
-      console.error('Invalid seat map JSON: missing required fields')
-      return null
-    }
-
-    return parsed
+    parsed = JSON.parse(json)
   } catch (error) {
-    console.error('Failed to parse seat map JSON:', error)
-    return null
+    console.error('Failed to parse JSON:', error)
+    return { success: false, errors: ['Invalid JSON: failed to parse the file content.'] }
   }
+
+  const result = seatMapSchema.safeParse(parsed)
+
+  if (!result.success) {
+    const errors = result.error.issues.map((issue) => {
+      const path = issue.path.length > 0 ? issue.path.join('.') : 'root'
+      return `${path}: ${issue.message}`
+    })
+    console.error('Seat map validation failed:', errors)
+    return { success: false, errors }
+  }
+
+  return { success: true, data: result.data as SeatMap }
 }
 
 export const downloadJson = (seatMap: SeatMap, filename?: string): void => {
@@ -41,6 +59,8 @@ export const createEmptySeatMap = (name?: string): SeatMap => {
     background: { url: '', width: 800, height: 600 },
     seats: [],
     zones: [],
+    categories: [],
+    elements: [],
     settings: { allowMultiSelect: true, showLabels: true, theme: 'light' },
   }
 }

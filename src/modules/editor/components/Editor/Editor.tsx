@@ -1,10 +1,11 @@
 import dynamic from 'next/dynamic'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { DEFAULT_SEAT_SIZE, MAX_BACKGROUND_SIZE_BYTES, MAX_BACKGROUND_SIZE_MB } from '../../../core/constants'
 import { Seat, SeatMap } from '../../../core/types'
 import { useEditorState } from '../../hooks/useEditorState'
-import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
+import { OPEN_CATEGORIES_EVENT, useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
+import { createEmptySeatMap, downloadJson, importFromJson } from '../../services'
 import CategoryManager from '../CategoryManager/CategoryManager'
 import GridGenerator from '../GridGenerator/GridGenerator'
 import SeatProperties from '../SeatProperties/SeatProperties'
@@ -13,19 +14,7 @@ import styles from './Editor.module.scss'
 
 const Canvas = dynamic(() => import('../../../seatmap-renderer/components/Canvas/Canvas'), { ssr: false })
 
-const DEFAULT_SEATMAP: SeatMap = {
-  id: crypto.randomUUID(),
-  version: '1.0',
-  name: 'Untitled Map',
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  background: { url: '', width: 800, height: 600 },
-  seats: [],
-  zones: [],
-  categories: [],
-  elements: [],
-  settings: { allowMultiSelect: true, showLabels: true, theme: 'light' },
-}
+const DEFAULT_SEATMAP: SeatMap = createEmptySeatMap()
 
 const Editor = () => {
   const seatMap = useEditorState((s) => s.seatMap)
@@ -36,9 +25,11 @@ const Editor = () => {
   const updateSeat = useEditorState((s) => s.updateSeat)
   const updateElement = useEditorState((s) => s.updateElement)
   const selectSeat = useEditorState((s) => s.selectSeat)
+  const selectSeats = useEditorState((s) => s.selectSeats)
   const deselectSeat = useEditorState((s) => s.deselectSeat)
   const clearSelection = useEditorState((s) => s.clearSelection)
   const setActiveTool = useEditorState((s) => s.setActiveTool)
+  const updateBackground = useEditorState((s) => s.updateBackground)
 
   const [isGridOpen, setIsGridOpen] = useState(false)
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false)
@@ -46,6 +37,12 @@ const Editor = () => {
   const [backgroundError, setBackgroundError] = useState<string | null>(null)
 
   useKeyboardShortcuts()
+
+  useEffect(() => {
+    const handleOpenCategories = () => setIsCategoryManagerOpen(true)
+    window.addEventListener(OPEN_CATEGORIES_EVENT, handleOpenCategories)
+    return () => window.removeEventListener(OPEN_CATEGORIES_EVENT, handleOpenCategories)
+  }, [])
 
   if (!seatMap) {
     setSeatMap(DEFAULT_SEATMAP)
@@ -115,27 +112,55 @@ const Editor = () => {
     setIsCategoryManagerOpen(true)
   }, [])
 
+  const handleLassoSelect = useCallback(
+    (seatIds: string[], additive: boolean) => {
+      if (additive) {
+        // Shift+drag: add new seats to existing selection (avoid duplicates)
+        const existingSet = new Set(selectedSeats)
+        const newIds = seatIds.filter((id) => !existingSet.has(id))
+        selectSeats([...selectedSeats, ...newIds])
+      } else {
+        // Normal drag: replace selection entirely
+        selectSeats(seatIds)
+      }
+    },
+    [selectedSeats, selectSeats],
+  )
+
+  const handleBackgroundDragEnd = useCallback(
+    (x: number, y: number) => {
+      updateBackground({ x, y })
+    },
+    [updateBackground],
+  )
+
+  const handleBackgroundTransformEnd = useCallback(
+    (x: number, y: number, bgScale: number) => {
+      updateBackground({ x, y, scale: bgScale })
+    },
+    [updateBackground],
+  )
+
+  const isBackgroundLocked = seatMap?.background?.locked ?? true
+
+  const handleToggleBackgroundLock = useCallback(() => {
+    updateBackground({ locked: !isBackgroundLocked })
+  }, [updateBackground, isBackgroundLocked])
+
   const handleExport = useCallback(() => {
     if (!seatMap) {
       return
     }
-    const json = JSON.stringify(seatMap, null, 2)
-    const blob = new Blob([json], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${seatMap.name || 'seatmap'}.json`
-    a.click()
-    URL.revokeObjectURL(url)
+    downloadJson(seatMap)
   }, [seatMap])
 
   const handleImport = useCallback(
     (data: string) => {
-      try {
-        const parsed = JSON.parse(data) as SeatMap
-        setSeatMap(parsed)
-      } catch {
-        console.error('Failed to parse imported JSON')
+      const result = importFromJson(data)
+      if (result.success === true) {
+        setSeatMap(result.data)
+      } else if (result.success === false) {
+        console.error('Import validation failed:', result.errors.join('; '))
       }
     },
     [setSeatMap],
@@ -237,7 +262,9 @@ const Editor = () => {
         onUploadBackground={handleUploadBackground}
         onRemoveBackground={handleRemoveBackground}
         onOpenCategories={handleOpenCategories}
+        onToggleBackgroundLock={handleToggleBackgroundLock}
         hasBackground={Boolean(seatMap.background?.url)}
+        isBackgroundLocked={isBackgroundLocked}
       />
       <div className={styles.editor__content}>
         <div
@@ -251,10 +278,14 @@ const Editor = () => {
             isEditable
             selectedSeats={selectedSeats}
             showLabels={seatMap.settings?.showLabels ?? true}
+            activeTool={activeTool}
             onSeatClick={handleSeatClick}
             onSeatDragEnd={handleSeatDragEnd}
             onStageClick={handleStageClick}
             onElementDragEnd={handleElementDragEnd}
+            onLassoSelect={handleLassoSelect}
+            onBackgroundDragEnd={handleBackgroundDragEnd}
+            onBackgroundTransformEnd={handleBackgroundTransformEnd}
           />
           {isDragOver && <div className={styles['editor__drop-overlay']}>Drop image to set as background</div>}
           {backgroundError && (

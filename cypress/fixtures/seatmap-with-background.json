@@ -1,0 +1,23 @@
+{
+  "id": "test-map-003",
+  "version": "1.0",
+  "name": "Test Venue with Background",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z",
+  "background": {
+    "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    "width": 1,
+    "height": 1,
+    "locked": true
+  },
+  "seats": [
+    { "id": "seat-1", "label": "A1", "x": 0.1, "y": 0.1, "w": 0.02, "h": 0.02, "status": "available" },
+    { "id": "seat-2", "label": "A2", "x": 0.14, "y": 0.1, "w": 0.02, "h": 0.02, "status": "available" }
+  ],
+  "zones": [],
+  "settings": {
+    "allowMultiSelect": true,
+    "showLabels": true,
+    "theme": "light"
+  }
+}

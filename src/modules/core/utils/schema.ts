@@ -62,10 +62,14 @@ export const seatSizeSchema = z.object({
 })
 
 export const seatMapBackgroundSchema = z.object({
-  url: z.union([z.string().url(), z.literal('')]),
+  url: z.union([z.string().url(), z.literal(''), z.string().startsWith('data:')]),
   width: z.number().nonnegative(),
   height: z.number().nonnegative(),
   aspectRatio: z.number().positive().optional(),
+  x: z.number().optional(),
+  y: z.number().optional(),
+  scale: z.number().positive().optional(),
+  locked: z.boolean().optional(),
 })
 
 export const seatMapSettingsSchema = z.object({

@@ -88,18 +88,21 @@ src/
 ## Code Style Guidelines
 
 ### TypeScript
+
 - **Strict mode**: Disabled (`strict: false` in tsconfig)
 - Target: ES6
 - Use TypeScript for all new files
 - Avoid `any` when possible (but currently allowed)
 
 ### React
+
 - Use functional components with hooks
 - React 19
 - No need to import React in JSX files
 - Use `useCallback` and `useMemo` for performance optimization
 
 ### Imports
+
 - Imports must be sorted using `simple-import-sort`
 - Each folder (except `src/pages`) should have an `index.ts` that exports all files
 - Import from folder index, not individual files
@@ -110,6 +113,7 @@ src/
 - Inside a module, prefer relative imports; outside the module, import from the module `index.ts` (or `@/modules/<module>` / `@/core`).
 
 ### Styling
+
 - Use **Sass** with CSS Modules (`*.module.scss`)
 - BEM naming convention for CSS classes
 - Single quotes for strings
@@ -118,6 +122,7 @@ src/
 - Max line length: 180 characters (code)
 
 ### Code Quality Rules
+
 - Always use curly braces for control statements
 - Console logs: Only `console.warn`, `console.error`, `console.info` allowed
 - Unused variables starting with `_` are allowed
@@ -131,6 +136,7 @@ src/
 - Routes are functions that return the path
 
 Example:
+
 ```typescript
 import { ROUTER_URL } from '@/core'
 
@@ -163,20 +169,24 @@ import { ROUTER_URL } from '@/core'
 ## Common Patterns
 
 ### Index Exports
+
 - Each folder exports all its contents via `index.ts`
 - Import from folder, not individual files
 - Cleaner imports: `import { Canvas } from '@/modules/seatmap-renderer'`
 
 ### State Management
+
 - **Zustand** for editor state (with undo/redo history)
 - **React hooks** for embed state (useSelection, usePostMessage)
 
 ### Canvas Rendering
+
 - All coordinates stored as normalized (0-1 range)
 - Konva.js for 2D canvas rendering
 - Components: Canvas > Background + Zones + Seats (layered)
 
 ### API Communication
+
 - REST API at `NEXT_PUBLIC_API_URL` (default: `http://localhost:3001`)
 - Standard response format: `{ success, data, meta }`
 - Embed uses postMessage for iframe communication
@@ -204,6 +214,7 @@ import { ROUTER_URL } from '@/core'
 ## Testing
 
 ### Cypress E2E Tests
+
 - Config: `cypress.config.ts` (base URL: `http://localhost:3000`)
 - Specs: `cypress/e2e/*.cy.ts`
 - Fixtures: `cypress/fixtures/`
@@ -211,22 +222,26 @@ import { ROUTER_URL } from '@/core'
 - Separate `cypress/tsconfig.json` to avoid conflicts with main tsconfig
 
 ### Test Suites (38 total)
-| Spec | Tests | Description |
-|------|-------|-------------|
-| `home.cy.ts` | 5 | Home page rendering, navigation, meta |
-| `editor.cy.ts` | 23 | Toolbar, tools, canvas, grid generator, export/import, undo/redo, keyboard shortcuts |
-| `embed.cy.ts` | 10 | Loading/error states, canvas rendering, API mocking, edit page flow |
+
+| Spec           | Tests | Description                                                                          |
+| -------------- | ----- | ------------------------------------------------------------------------------------ |
+| `home.cy.ts`   | 5     | Home page rendering, navigation, meta                                                |
+| `editor.cy.ts` | 23    | Toolbar, tools, canvas, grid generator, export/import, undo/redo, keyboard shortcuts |
+| `embed.cy.ts`  | 10    | Loading/error states, canvas rendering, API mocking, edit page flow                  |
 
 ### Running Tests
+
 ```bash
 npm run cypress:run   # Headless (CI)
 npm run cypress:open  # Interactive runner
 ```
 
 ### Important Notes
+
 - **Dev server must be running** (`npm run dev`) before running Cypress tests
 - Konva canvas components load via `next/dynamic` with SSR disabled; tests use `cy.get('.konvajs-content', { timeout: 15000 })` to wait for canvas render
 - For controlled `type="number"` inputs, use `cy.get(selector).type('{selectall}value')` instead of `.clear().type()` to reliably replace values
+- **MANDATORY: Every new feature, bug fix, or behavioral change MUST include corresponding Cypress E2E tests.** No task is considered complete without tests. Add tests to the appropriate spec file (`editor.cy.ts`, `embed.cy.ts`, or `home.cy.ts`) or create a new spec if needed.
 
 ## Additional Notes
 

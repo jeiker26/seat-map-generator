@@ -26,6 +26,8 @@ interface SeatProps {
   category?: SeatCategory
   onClick?: (_seatId: string, _event?: MouseEvent) => void
   onDragEnd?: (_seatId: string, _x: number, _y: number) => void
+  onMouseEnter?: (_seatId: string, _pixelX: number, _pixelY: number) => void
+  onMouseLeave?: (_seatId: string) => void
 }
 
 const SeatComponent = ({
@@ -38,6 +40,8 @@ const SeatComponent = ({
   category,
   onClick,
   onDragEnd,
+  onMouseEnter,
+  onMouseLeave,
 }: SeatProps) => {
   const pixelX = seat.x * containerWidth
   const pixelY = seat.y * containerHeight
@@ -104,6 +108,38 @@ const SeatComponent = ({
     [onDragEnd, seat.id, containerWidth, containerHeight],
   )
 
+  const handleMouseEnter = useCallback(
+    (e: Konva.KonvaEventObject<MouseEvent>) => {
+      if (onMouseEnter) {
+        const stage = e.target.getStage()
+        if (stage) {
+          const pointer = stage.getPointerPosition()
+          if (pointer) {
+            onMouseEnter(seat.id, pointer.x, pointer.y)
+          }
+        }
+      }
+      const container = e.target.getStage()?.container()
+      if (container) {
+        container.style.cursor = 'pointer'
+      }
+    },
+    [onMouseEnter, seat.id],
+  )
+
+  const handleMouseLeave = useCallback(
+    (e: Konva.KonvaEventObject<MouseEvent>) => {
+      if (onMouseLeave) {
+        onMouseLeave(seat.id)
+      }
+      const container = e.target.getStage()?.container()
+      if (container) {
+        container.style.cursor = 'default'
+      }
+    },
+    [onMouseLeave, seat.id],
+  )
+
   return (
     <Group
       x={pixelX}
@@ -112,6 +148,8 @@ const SeatComponent = ({
       onDragEnd={handleDragEnd}
       onClick={handleClick}
       onTap={handleTap}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       rotation={seat.r || 0}
       opacity={isSelected ? 1 : opacity}
     >

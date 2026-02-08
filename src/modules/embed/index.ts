@@ -1,3 +1,3 @@
 export { EmbedRenderer } from './components/EmbedRenderer'
 export { SeatTooltip } from './components/SeatTooltip'
-export { usePostMessage, useSelection } from './hooks'
+export { useKeyboardNavigation, usePostMessage, useSelection } from './hooks'

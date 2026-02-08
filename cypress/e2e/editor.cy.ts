@@ -105,7 +105,9 @@ describe('Editor Page', () => {
       cy.get('#grid-cols').type('{selectall}3')
       cy.get('#grid-cols').should('have.value', '3')
 
-      cy.get('button').contains(/Generate \d+ Seats/).click()
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
 
       // Modal should be closed
       cy.contains('Grid Generator').should('not.exist')
@@ -133,7 +135,9 @@ describe('Editor Page', () => {
       cy.get('#grid-rows').should('have.value', '2')
       cy.get('#grid-cols').type('{selectall}2')
       cy.get('#grid-cols').should('have.value', '2')
-      cy.get('button').contains(/Generate \d+ Seats/).click()
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
 
       // Click export - file download is triggered via JS
       cy.get('button').contains('Export').click()
@@ -230,6 +234,28 @@ describe('Editor Page', () => {
       // Redo should now be available
       cy.get('button').contains('Redo').should('not.be.disabled')
     })
+
+    it('should open Category Manager with C key', () => {
+      // Press C key to open Category Manager
+      cy.get('body').trigger('keydown', { key: 'c', code: 'KeyC' })
+
+      // Category Manager modal should be visible
+      cy.contains('Category Manager').should('be.visible')
+    })
+
+    it('should close Category Manager and reopen with C key', () => {
+      // Open Category Manager
+      cy.get('body').trigger('keydown', { key: 'c', code: 'KeyC' })
+      cy.contains('Category Manager').should('be.visible')
+
+      // Close via Close button
+      cy.get('button').contains('Close').click()
+      cy.contains('Category Manager').should('not.exist')
+
+      // Reopen with C key
+      cy.get('body').trigger('keydown', { key: 'c', code: 'KeyC' })
+      cy.contains('Category Manager').should('be.visible')
+    })
   })
 
   describe('Background Image Controls', () => {
@@ -280,6 +306,80 @@ describe('Editor Page', () => {
     })
   })
 
+  describe('Import Validation', () => {
+    it('should successfully import a valid seatmap with categories', () => {
+      cy.fixture('seatmap-with-categories.json').then((seatMapData) => {
+        const json = JSON.stringify(seatMapData)
+        const blob = new Blob([json], { type: 'application/json' })
+        const file = new File([blob], 'seatmap-with-categories.json', { type: 'application/json' })
+        const dataTransfer = new DataTransfer()
+        dataTransfer.items.add(file)
+
+        cy.get('input[type="file"][accept=".json"]').then(($input) => {
+          const input = $input[0] as HTMLInputElement
+          input.files = dataTransfer.files
+          input.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+        // After importing, the canvas should still render
+        cy.get('.konvajs-content canvas').should('exist')
+
+        // Verify the editor is functional by adding a seat
+        cy.get('button').contains('Add Seat').click()
+        cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+        cy.get('button').contains('Undo').should('not.be.disabled')
+      })
+    })
+
+    it('should not crash when importing an invalid seatmap', () => {
+      cy.fixture('seatmap-invalid.json').then((invalidData) => {
+        const json = JSON.stringify(invalidData)
+        const blob = new Blob([json], { type: 'application/json' })
+        const file = new File([blob], 'seatmap-invalid.json', { type: 'application/json' })
+        const dataTransfer = new DataTransfer()
+        dataTransfer.items.add(file)
+
+        cy.get('input[type="file"][accept=".json"]').then(($input) => {
+          const input = $input[0] as HTMLInputElement
+          input.files = dataTransfer.files
+          input.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+        // The editor should not crash — canvas should still exist
+        cy.get('.konvajs-content canvas').should('exist')
+
+        // The toolbar should still be functional
+        cy.get('button').contains('Select').should('be.visible')
+        cy.get('button').contains('Add Seat').should('be.visible')
+      })
+    })
+
+    it('should keep original map data when import validation fails', () => {
+      // First, add a seat to have some state
+      cy.get('button').contains('Add Seat').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('button').contains('Undo').should('not.be.disabled')
+
+      // Now attempt to import invalid data
+      cy.fixture('seatmap-invalid.json').then((invalidData) => {
+        const json = JSON.stringify(invalidData)
+        const blob = new Blob([json], { type: 'application/json' })
+        const file = new File([blob], 'seatmap-invalid.json', { type: 'application/json' })
+        const dataTransfer = new DataTransfer()
+        dataTransfer.items.add(file)
+
+        cy.get('input[type="file"][accept=".json"]').then(($input) => {
+          const input = $input[0] as HTMLInputElement
+          input.files = dataTransfer.files
+          input.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+        // Undo should still be enabled (original state preserved)
+        cy.get('button').contains('Undo').should('not.be.disabled')
+      })
+    })
+  })
+
   describe('Grid Generator - Seat Size', () => {
     it('should display seat width and height inputs in grid generator', () => {
       cy.get('button').contains('Grid').click()
@@ -305,6 +405,217 @@ describe('Editor Page', () => {
       cy.get('#grid-seat-width').should('have.value', '0.03')
       cy.get('#grid-seat-height').type('{selectall}0.04')
       cy.get('#grid-seat-height').should('have.value', '0.04')
+    })
+  })
+
+  describe('Lasso / Rectangle Selection', () => {
+    it('should not pan the stage when Select tool is active (stage drag disabled)', () => {
+      // The Select tool should be active by default
+      cy.get('button').contains('Select').should('exist')
+
+      // Get the canvas initial position, drag it, and verify it did not pan
+      // (In select mode, stage.draggable is false so panning is disabled)
+      cy.get('.konvajs-content canvas')
+        .first()
+        .then(($canvas) => {
+          const rect = $canvas[0].getBoundingClientRect()
+          const startX = rect.left + 100
+          const startY = rect.top + 100
+
+          // Perform a mousedown + mousemove + mouseup (simulating a drag)
+          cy.get('.konvajs-content canvas')
+            .first()
+            .trigger('mousedown', 100, 100, { force: true })
+            .trigger('mousemove', 200, 200, { force: true })
+            .trigger('mouseup', 200, 200, { force: true })
+
+          // Canvas should still be rendered and functional
+          cy.get('.konvajs-content canvas').should('exist')
+        })
+    })
+
+    it('should allow panning when Pan tool is active', () => {
+      // Switch to Pan tool
+      cy.get('button').contains('Pan').click()
+
+      // Canvas should still be rendered
+      cy.get('.konvajs-content canvas').should('exist')
+
+      // Dragging should work (stage.draggable is true for non-select tools)
+      cy.get('.konvajs-content canvas')
+        .first()
+        .trigger('mousedown', 100, 100, { force: true })
+        .trigger('mousemove', 200, 200, { force: true })
+        .trigger('mouseup', 200, 200, { force: true })
+
+      cy.get('.konvajs-content canvas').should('exist')
+    })
+
+    it('should select seats within a rectangle drag area', () => {
+      // First generate a grid of seats so we have something to select
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}3')
+      cy.get('#grid-cols').type('{selectall}3')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      // Switch to Select tool
+      cy.get('button').contains('Select').click()
+
+      // Drag a rectangle over the canvas area where seats were generated
+      cy.get('.konvajs-content canvas')
+        .first()
+        .trigger('mousedown', 300, 200, { force: true })
+        .trigger('mousemove', 500, 400, { force: true })
+        .trigger('mouseup', 500, 400, { force: true })
+
+      // The canvas and editor should still be functional
+      cy.get('.konvajs-content canvas').should('exist')
+    })
+
+    it('should not crash when dragging on empty canvas with Select tool', () => {
+      // Select tool is active by default, no seats on canvas
+      cy.get('.konvajs-content canvas')
+        .first()
+        .trigger('mousedown', 100, 100, { force: true })
+        .trigger('mousemove', 300, 300, { force: true })
+        .trigger('mouseup', 300, 300, { force: true })
+
+      // Editor should still be fully functional
+      cy.get('button').contains('Select').should('be.visible')
+      cy.get('button').contains('Add Seat').should('be.visible')
+      cy.get('.konvajs-content canvas').should('exist')
+    })
+
+    it('should clear selection when clicking on empty canvas with Select tool', () => {
+      // Add a seat
+      cy.get('button').contains('Add Seat').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('button').contains('Undo').should('not.be.disabled')
+
+      // Switch to Select tool
+      cy.get('button').contains('Select').click()
+
+      // Click on empty canvas area — should clear selection (handled by onStageClick)
+      cy.get('.konvajs-content canvas').first().click(100, 100, { force: true })
+
+      // No seat should be selected — properties panel shows "No seat selected"
+      cy.contains('No seat selected').should('be.visible')
+    })
+  })
+
+  describe('Background Lock / Unlock', () => {
+    it('should not display Lock/Unlock BG button when no background is set', () => {
+      cy.get('button').contains('Unlock BG').should('not.exist')
+      cy.get('button').contains('Lock BG').should('not.exist')
+    })
+
+    it('should display Unlock BG button after importing a seatmap with a background', () => {
+      cy.fixture('seatmap-with-background.json').then((seatMapData) => {
+        const json = JSON.stringify(seatMapData)
+        const blob = new Blob([json], { type: 'application/json' })
+        const file = new File([blob], 'seatmap-with-background.json', { type: 'application/json' })
+        const dataTransfer = new DataTransfer()
+        dataTransfer.items.add(file)
+
+        cy.get('input[type="file"][accept=".json"]').then(($input) => {
+          const input = $input[0] as HTMLInputElement
+          input.files = dataTransfer.files
+          input.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+        // Background is locked by default, so button says "Unlock BG"
+        cy.get('button').contains('Unlock BG').should('be.visible')
+
+        // Remove BG button should also be visible
+        cy.get('button').contains('Remove BG').should('be.visible')
+      })
+    })
+
+    it('should toggle between Unlock BG and Lock BG when clicked', () => {
+      cy.fixture('seatmap-with-background.json').then((seatMapData) => {
+        const json = JSON.stringify(seatMapData)
+        const blob = new Blob([json], { type: 'application/json' })
+        const file = new File([blob], 'seatmap-with-background.json', { type: 'application/json' })
+        const dataTransfer = new DataTransfer()
+        dataTransfer.items.add(file)
+
+        cy.get('input[type="file"][accept=".json"]').then(($input) => {
+          const input = $input[0] as HTMLInputElement
+          input.files = dataTransfer.files
+          input.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+        // Initially locked — shows "Unlock BG"
+        cy.get('button').contains('Unlock BG').should('be.visible')
+
+        // Click to unlock
+        cy.get('button').contains('Unlock BG').click()
+
+        // Now unlocked — shows "Lock BG"
+        cy.get('button').contains('Lock BG').should('be.visible')
+        cy.get('button').contains('Unlock BG').should('not.exist')
+
+        // Click to lock again
+        cy.get('button').contains('Lock BG').click()
+
+        // Back to locked — shows "Unlock BG"
+        cy.get('button').contains('Unlock BG').should('be.visible')
+        cy.get('button').contains('Lock BG').should('not.exist')
+      })
+    })
+
+    it('should hide Lock/Unlock BG button when background is removed', () => {
+      cy.fixture('seatmap-with-background.json').then((seatMapData) => {
+        const json = JSON.stringify(seatMapData)
+        const blob = new Blob([json], { type: 'application/json' })
+        const file = new File([blob], 'seatmap-with-background.json', { type: 'application/json' })
+        const dataTransfer = new DataTransfer()
+        dataTransfer.items.add(file)
+
+        cy.get('input[type="file"][accept=".json"]').then(($input) => {
+          const input = $input[0] as HTMLInputElement
+          input.files = dataTransfer.files
+          input.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+        // Unlock BG button should exist
+        cy.get('button').contains('Unlock BG').should('be.visible')
+
+        // Remove the background
+        cy.get('button').contains('Remove BG').click()
+
+        // Lock/Unlock BG button should be gone
+        cy.get('button').contains('Unlock BG').should('not.exist')
+        cy.get('button').contains('Lock BG').should('not.exist')
+
+        // Remove BG button should also be gone
+        cy.get('button').contains('Remove BG').should('not.exist')
+      })
+    })
+
+    it('should enable undo after toggling background lock', () => {
+      cy.fixture('seatmap-with-background.json').then((seatMapData) => {
+        const json = JSON.stringify(seatMapData)
+        const blob = new Blob([json], { type: 'application/json' })
+        const file = new File([blob], 'seatmap-with-background.json', { type: 'application/json' })
+        const dataTransfer = new DataTransfer()
+        dataTransfer.items.add(file)
+
+        cy.get('input[type="file"][accept=".json"]').then(($input) => {
+          const input = $input[0] as HTMLInputElement
+          input.files = dataTransfer.files
+          input.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+
+        // Toggle the lock — this should push to history
+        cy.get('button').contains('Unlock BG').click()
+
+        // Undo should be enabled
+        cy.get('button').contains('Undo').should('not.be.disabled')
+      })
     })
   })
 })

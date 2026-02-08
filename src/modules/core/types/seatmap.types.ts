@@ -18,6 +18,10 @@ export interface SeatMapBackground {
   width: number
   height: number
   aspectRatio?: number
+  x?: number
+  y?: number
+  scale?: number
+  locked?: boolean
 }
 
 export interface SeatMapSettings {

@@ -2,6 +2,8 @@ import { useCallback, useEffect } from 'react'
 
 import { useEditorState } from './useEditorState'
 
+export const OPEN_CATEGORIES_EVENT = 'editor:openCategories'
+
 export const useKeyboardShortcuts = () => {
   const undo = useEditorState((state) => state.undo)
   const redo = useEditorState((state) => state.redo)
@@ -60,6 +62,10 @@ export const useKeyboardShortcuts = () => {
           case 'g':
             e.preventDefault()
             setActiveTool('grid')
+            break
+          case 'c':
+            e.preventDefault()
+            window.dispatchEvent(new CustomEvent(OPEN_CATEGORIES_EVENT))
             break
         }
       }

@@ -1,0 +1,85 @@
+{
+  "id": "test-map-002",
+  "version": "1.0",
+  "name": "Test Venue with Categories",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z",
+  "background": {
+    "url": "",
+    "width": 800,
+    "height": 600
+  },
+  "categories": [
+    { "id": "cat-vip", "name": "VIP", "color": "#FFD700", "price": 150, "order": 0 },
+    { "id": "cat-standard", "name": "Standard", "color": "#4CAF50", "price": 50, "order": 1 }
+  ],
+  "seats": [
+    {
+      "id": "seat-1",
+      "label": "A1",
+      "x": 0.1,
+      "y": 0.1,
+      "w": 0.02,
+      "h": 0.02,
+      "status": "available",
+      "categoryId": "cat-vip",
+      "row": 1,
+      "column": 1
+    },
+    {
+      "id": "seat-2",
+      "label": "A2",
+      "x": 0.14,
+      "y": 0.1,
+      "w": 0.02,
+      "h": 0.02,
+      "status": "available",
+      "categoryId": "cat-vip",
+      "row": 1,
+      "column": 2
+    },
+    {
+      "id": "seat-3",
+      "label": "A3",
+      "x": 0.18,
+      "y": 0.1,
+      "w": 0.02,
+      "h": 0.02,
+      "status": "reserved",
+      "categoryId": "cat-standard",
+      "row": 1,
+      "column": 3
+    },
+    {
+      "id": "seat-4",
+      "label": "B1",
+      "x": 0.1,
+      "y": 0.15,
+      "w": 0.02,
+      "h": 0.02,
+      "status": "sold",
+      "categoryId": "cat-standard",
+      "row": 2,
+      "column": 1
+    },
+    {
+      "id": "seat-5",
+      "label": "B2",
+      "x": 0.14,
+      "y": 0.15,
+      "w": 0.02,
+      "h": 0.02,
+      "status": "available",
+      "categoryId": "cat-standard",
+      "row": 2,
+      "column": 2
+    }
+  ],
+  "zones": [{ "id": "zone-front", "name": "Front Section", "color": "#2196F3", "price": 100 }],
+  "elements": [],
+  "settings": {
+    "allowMultiSelect": true,
+    "showLabels": true,
+    "theme": "light"
+  }
+}

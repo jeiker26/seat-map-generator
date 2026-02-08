@@ -1,4 +1,4 @@
-import { MapElement, Seat, SeatCategory, SeatMap } from './seatmap.types'
+import { MapElement, Seat, SeatCategory, SeatMap, SeatMapBackground } from './seatmap.types'
 
 export type EditorTool = 'select' | 'add' | 'pan' | 'grid' | 'element'
 
@@ -20,6 +20,7 @@ export interface EditorActions {
   deleteSeat: (_id: string) => void
   deleteSeats: (_ids: string[]) => void
   selectSeat: (_id: string) => void
+  selectSeats: (_ids: string[]) => void
   deselectSeat: (_id: string) => void
   clearSelection: () => void
   setActiveTool: (_tool: EditorTool) => void
@@ -31,6 +32,7 @@ export interface EditorActions {
   deleteElement: (_id: string) => void
   updateGridConfig: (_config: Partial<SeatMap['gridConfig']>) => void
   updateSettings: (_settings: Partial<NonNullable<SeatMap['settings']>>) => void
+  updateBackground: (_updates: Partial<SeatMapBackground>) => void
   undo: () => void
   redo: () => void
   canUndo: () => boolean
