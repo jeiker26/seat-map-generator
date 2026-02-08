@@ -1,19 +1,18 @@
+@use '@/styles/variables' as *;
+
 .toolbar {
   position: absolute;
-  top: 16px;
+  top: $spacing-md;
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
   display: flex;
   align-items: center;
   gap: 2px;
-  padding: 4px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    0 2px 8px rgba(0, 0, 0, 0.08),
-    0 8px 24px rgba(0, 0, 0, 0.06);
+  padding: $spacing-xs;
+  background-color: $bg-primary;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-float;
 
   &__group {
     display: flex;
@@ -28,34 +27,34 @@
     height: 36px;
     padding: 0;
     border: none;
-    border-radius: 8px;
+    border-radius: $radius-md;
     background-color: transparent;
-    color: #495057;
+    color: $text-body;
     cursor: pointer;
     transition: all 0.12s ease;
     user-select: none;
 
     &:hover:not(:disabled) {
-      background-color: #f1f3f5;
-      color: #212529;
+      background-color: $bg-hover;
+      color: $text-dark;
     }
 
     &--active {
-      background-color: #e7f5ff;
-      color: #1971c2;
+      background-color: $color-primary-light;
+      color: $color-primary-dark;
 
       &:hover:not(:disabled) {
-        background-color: #d0ebff;
-        color: #1864ab;
+        background-color: $color-primary-light-hover;
+        color: $color-primary-darker;
       }
     }
 
     &--danger {
-      color: #e03131;
+      color: $color-error;
 
       &:hover:not(:disabled) {
-        background-color: #fff5f5;
-        color: #c92a2a;
+        background-color: $color-error-light;
+        color: $color-error-dark;
       }
     }
 
@@ -72,8 +71,8 @@
   &__divider {
     width: 1px;
     height: 24px;
-    background-color: #dee2e6;
-    margin: 0 4px;
+    background-color: $border-default;
+    margin: 0 $spacing-xs;
     flex-shrink: 0;
   }
 }

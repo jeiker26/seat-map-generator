@@ -9,10 +9,7 @@
   padding: $spacing-md;
   background-color: $bg-primary;
   border-radius: $radius-lg;
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    0 2px 8px rgba(0, 0, 0, 0.08),
-    0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: $shadow-float;
   overflow-y: auto;
   max-height: calc(100% - #{$spacing-xl});
 
@@ -25,7 +22,7 @@
     margin: 0 0 $spacing-sm;
     font-size: 13px;
     font-weight: 600;
-    color: #343a40;
+    color: $text-heading;
     letter-spacing: -0.01em;
   }
 
@@ -52,7 +49,7 @@
     display: block;
     font-size: 11px;
     font-weight: 500;
-    color: #868e96;
+    color: $text-muted;
     margin-bottom: 3px;
     text-transform: uppercase;
     letter-spacing: 0.3px;
@@ -61,29 +58,29 @@
   &__input,
   &__select {
     width: 100%;
-    padding: 5px 8px;
-    border: 1px solid #dee2e6;
+    padding: 5px $spacing-sm;
+    border: 1px solid $border-default;
     border-radius: $radius-sm;
     font-size: 12px;
-    color: #343a40;
+    color: $text-heading;
     background-color: $bg-primary;
     box-sizing: border-box;
     transition: border-color $transition-fast;
 
     &:focus {
       outline: none;
-      border-color: #339af0;
-      box-shadow: 0 0 0 2px rgba(51, 154, 240, 0.15);
+      border-color: $color-primary;
+      box-shadow: $focus-ring;
     }
 
     &:hover:not(:focus) {
-      border-color: #adb5bd;
+      border-color: $border-muted;
     }
   }
 
   &__value {
     font-size: 11px;
-    color: #868e96;
+    color: $text-muted;
     font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
   }
 
@@ -105,14 +102,14 @@
   &__section {
     margin-bottom: 10px;
     padding-top: $spacing-sm;
-    border-top: 1px solid #f1f3f5;
+    border-top: 1px solid $border-separator;
   }
 
   &__section-title {
     display: block;
     font-size: 10px;
     font-weight: 600;
-    color: #adb5bd;
+    color: $text-disabled;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 6px;
@@ -126,10 +123,10 @@
 
   &__toolbar-btn {
     padding: 3px 7px;
-    border: 1px solid #e9ecef;
+    border: 1px solid $border-light;
     border-radius: 6px;
     background-color: $bg-primary;
-    color: #495057;
+    color: $text-body;
     font-size: 10px;
     cursor: pointer;
     transition: all $transition-fast;
@@ -137,9 +134,9 @@
     white-space: nowrap;
 
     &:hover:not(:disabled) {
-      background-color: #e7f5ff;
-      border-color: #74c0fc;
-      color: #1971c2;
+      background-color: $color-primary-light;
+      border-color: $color-primary-outline;
+      color: $color-primary-dark;
     }
 
     &:disabled {
@@ -152,18 +149,18 @@
     width: 100%;
     padding: 6px;
     margin-top: $spacing-sm;
-    border: 1px solid #ffc9c9;
+    border: 1px solid $color-error-border;
     border-radius: $radius-sm + 2;
     background-color: $bg-primary;
-    color: #e03131;
+    color: $color-error;
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
     transition: all $transition-fast;
 
     &:hover {
-      background-color: #fff5f5;
-      border-color: #e03131;
+      background-color: $color-error-light;
+      border-color: $color-error;
     }
   }
 }

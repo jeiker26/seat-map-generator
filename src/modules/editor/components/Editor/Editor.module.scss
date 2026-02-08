@@ -1,8 +1,10 @@
+@use '@/styles/variables' as *;
+
 .editor {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #f8f9fa;
+  background-color: $bg-canvas;
 
   &__content {
     display: flex;
@@ -15,15 +17,15 @@
     flex: 1;
     position: relative;
     overflow: hidden;
-    background-color: #f8f9fa;
+    background-color: $bg-canvas;
 
     &--dragover {
       &::after {
         content: '';
         position: absolute;
-        inset: 8px;
-        border: 2px dashed #339af0;
-        border-radius: 12px;
+        inset: $spacing-sm;
+        border: 2px dashed $color-primary;
+        border-radius: $radius-lg;
         pointer-events: none;
         z-index: 10;
       }
@@ -39,29 +41,29 @@
     background-color: rgba(51, 154, 240, 0.06);
     font-size: 16px;
     font-weight: 500;
-    color: #1971c2;
+    color: $color-primary-dark;
     pointer-events: none;
     z-index: 10;
-    border-radius: 12px;
+    border-radius: $radius-lg;
   }
 
   &__error {
     position: absolute;
-    bottom: 16px;
+    bottom: $spacing-md;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 16px;
-    background-color: #fff5f5;
-    border: 1px solid #ffc9c9;
+    padding: 10px $spacing-md;
+    background-color: $color-error-light;
+    border: 1px solid $color-error-border;
     border-radius: 10px;
-    color: #c92a2a;
+    color: $color-error-dark;
     font-size: 13px;
     font-weight: 500;
     z-index: 101;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: $shadow-md;
     white-space: nowrap;
   }
 
@@ -74,11 +76,11 @@
     padding: 0;
     border: none;
     background: none;
-    color: #c92a2a;
+    color: $color-error-dark;
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: $radius-sm;
     line-height: 1;
 
     &:hover {

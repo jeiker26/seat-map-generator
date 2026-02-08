@@ -8,10 +8,7 @@
   max-width: 90vw;
   max-height: 85vh;
   overflow-y: auto;
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    0 4px 16px rgba(0, 0, 0, 0.12),
-    0 12px 40px rgba(0, 0, 0, 0.08);
+  box-shadow: $shadow-modal;
 
   &__overlay {
     position: fixed;
@@ -19,8 +16,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(4px);
+    background-color: $overlay-bg;
+    backdrop-filter: $overlay-blur;
     z-index: 1000;
   }
 
@@ -28,7 +25,7 @@
     margin: 0 0 $spacing-md;
     font-size: 15px;
     font-weight: 600;
-    color: #343a40;
+    color: $text-heading;
     letter-spacing: -0.01em;
   }
 
@@ -36,7 +33,7 @@
     margin: 0 0 $spacing-sm;
     font-size: 12px;
     font-weight: 600;
-    color: #495057;
+    color: $text-body;
   }
 
   &__list {
@@ -49,7 +46,7 @@
   }
 
   &__empty {
-    color: #adb5bd;
+    color: $text-disabled;
     font-size: 13px;
     text-align: center;
     padding: $spacing-md 0;
@@ -61,14 +58,14 @@
     align-items: center;
     gap: 10px;
     padding: $spacing-sm 10px;
-    border: 1px solid #e9ecef;
-    border-radius: $radius-sm + 4;
-    background-color: #f8f9fa;
+    border: 1px solid $border-light;
+    border-radius: $radius-md;
+    background-color: $bg-secondary;
     transition: all $transition-fast;
 
     &:hover {
-      background-color: #e7f5ff;
-      border-color: #a5d8ff;
+      background-color: $color-primary-light;
+      border-color: $color-primary-tint;
     }
   }
 
@@ -76,7 +73,7 @@
     display: inline-block;
     width: 24px;
     height: 20px;
-    border-radius: 4px;
+    border-radius: $radius-sm;
     border: 2px solid;
     flex-shrink: 0;
   }
@@ -84,7 +81,7 @@
   &__name {
     flex: 1;
     font-size: 13px;
-    color: #343a40;
+    color: $text-heading;
     font-weight: 500;
   }
 
@@ -103,21 +100,21 @@
   &__input {
     flex: 1;
     padding: $spacing-xs $spacing-sm;
-    border: 1px solid #dee2e6;
+    border: 1px solid $border-default;
     border-radius: $radius-sm + 2;
     font-size: 13px;
-    color: #343a40;
+    color: $text-heading;
     min-width: 0;
     transition: border-color $transition-fast;
 
     &:focus {
       outline: none;
-      border-color: #339af0;
-      box-shadow: 0 0 0 2px rgba(51, 154, 240, 0.15);
+      border-color: $color-primary;
+      box-shadow: $focus-ring;
     }
 
     &:hover:not(:focus) {
-      border-color: #adb5bd;
+      border-color: $border-muted;
     }
   }
 
@@ -125,7 +122,7 @@
     width: 32px;
     height: 28px;
     padding: 0;
-    border: 1px solid #dee2e6;
+    border: 1px solid $border-default;
     border-radius: $radius-sm + 2;
     cursor: pointer;
     flex-shrink: 0;
@@ -133,10 +130,10 @@
 
   &__add {
     padding: $spacing-sm + 4;
-    border: 1px dashed #ced4da;
-    border-radius: $radius-sm + 4;
+    border: 1px dashed $border-subtle;
+    border-radius: $radius-md;
     margin-bottom: $spacing-md;
-    background-color: #f8f9fa;
+    background-color: $bg-secondary;
   }
 
   &__add-row {
@@ -148,36 +145,36 @@
   &__btn {
     &--small {
       padding: $spacing-xs $spacing-sm;
-      border: 1px solid #dee2e6;
+      border: 1px solid $border-default;
       border-radius: $radius-sm + 2;
       background-color: $bg-primary;
-      color: #495057;
+      color: $text-body;
       font-size: 11px;
       cursor: pointer;
       white-space: nowrap;
       transition: all $transition-fast;
 
       &:hover {
-        background-color: #f1f3f5;
-        border-color: #adb5bd;
+        background-color: $bg-hover;
+        border-color: $border-muted;
       }
     }
 
     &--danger {
-      color: #e03131;
+      color: $color-error;
 
       &:hover {
-        background-color: #fff5f5;
-        border-color: #ffc9c9;
+        background-color: $color-error-light;
+        border-color: $color-error-border;
       }
     }
 
     &--add {
       padding: $spacing-xs $spacing-sm + 4;
-      border: 1px solid #339af0;
+      border: 1px solid $color-primary;
       border-radius: $radius-sm + 2;
-      background-color: #339af0;
-      color: #ffffff;
+      background-color: $color-primary;
+      color: $bg-primary;
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
@@ -185,7 +182,7 @@
       transition: all $transition-fast;
 
       &:hover {
-        background-color: #228be6;
+        background-color: $color-primary-hover;
       }
 
       &:disabled {
@@ -196,34 +193,34 @@
 
     &--secondary {
       padding: 7px $spacing-md;
-      border: 1px solid #dee2e6;
-      border-radius: $radius-sm + 4;
+      border: 1px solid $border-default;
+      border-radius: $radius-md;
       background-color: $bg-primary;
-      color: #495057;
+      color: $text-body;
       font-size: 13px;
       cursor: pointer;
       transition: all $transition-fast;
 
       &:hover {
-        background-color: #f8f9fa;
-        border-color: #adb5bd;
+        background-color: $bg-secondary;
+        border-color: $border-muted;
       }
     }
 
     &--primary {
       padding: 7px $spacing-md;
-      border: 1px solid #339af0;
-      border-radius: $radius-sm + 4;
-      background-color: #339af0;
-      color: #ffffff;
+      border: 1px solid $color-primary;
+      border-radius: $radius-md;
+      background-color: $color-primary;
+      color: $bg-primary;
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
       transition: all $transition-fast;
 
       &:hover {
-        background-color: #228be6;
-        border-color: #228be6;
+        background-color: $color-primary-hover;
+        border-color: $color-primary-hover;
       }
     }
   }
@@ -233,6 +230,6 @@
     justify-content: space-between;
     gap: $spacing-sm;
     padding-top: $spacing-md;
-    border-top: 1px solid #f1f3f5;
+    border-top: 1px solid $border-separator;
   }
 }

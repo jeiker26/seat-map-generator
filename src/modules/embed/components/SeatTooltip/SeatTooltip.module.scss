@@ -1,16 +1,18 @@
+@use '@/styles/variables' as *;
+
 .seat-tooltip {
   position: absolute;
-  background-color: #333333;
-  color: #ffffff;
-  padding: 8px 12px;
-  border-radius: 6px;
+  background-color: $text-heading;
+  color: $bg-primary;
+  padding: $spacing-sm $spacing-sm + 4;
+  border-radius: $radius-sm + 2;
   font-size: 12px;
   white-space: nowrap;
-  transition: opacity 0.15s ease;
+  transition: opacity $transition-fast;
   z-index: 100;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: $spacing-xs;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
   &__header {
@@ -55,22 +57,22 @@
 
     &--blocked {
       background-color: rgba(158, 158, 158, 0.3);
-      color: #bdbdbd;
+      color: $text-disabled;
     }
   }
 
   &__details {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: $spacing-sm;
     font-size: 11px;
     opacity: 0.85;
   }
 
   &__detail {
     &:not(:last-child)::after {
-      content: '·';
-      margin-left: 8px;
+      content: '\00B7';
+      margin-left: $spacing-sm;
       opacity: 0.5;
     }
   }

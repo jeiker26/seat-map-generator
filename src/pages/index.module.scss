@@ -1,48 +1,50 @@
+@use '@/styles/variables' as *;
+
 .home {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #fafafa;
+  background-color: $bg-secondary;
 
   &__header {
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: $spacing-2xl;
   }
 
   &__title {
     font-size: 36px;
     font-weight: 700;
-    color: #1a1a1a;
-    margin: 0 0 12px;
+    color: $text-title-dark;
+    margin: 0 0 $spacing-sm + 4;
   }
 
   &__subtitle {
     font-size: 18px;
-    color: #666666;
+    color: $text-secondary;
     margin: 0;
   }
 
   &__main {
     display: flex;
-    gap: 16px;
+    gap: $spacing-md;
   }
 
   &__cta {
     display: inline-flex;
     align-items: center;
-    padding: 12px 32px;
-    background-color: #2196f3;
-    color: #ffffff;
-    border-radius: 8px;
+    padding: $spacing-sm + 4 $spacing-xl;
+    background-color: $color-primary;
+    color: $bg-primary;
+    border-radius: $radius-md;
     font-size: 16px;
     font-weight: 500;
     text-decoration: none;
-    transition: background-color 0.2s ease;
+    transition: background-color $transition-normal;
 
     &:hover {
-      background-color: #1976d2;
+      background-color: $color-primary-hover;
     }
   }
 }

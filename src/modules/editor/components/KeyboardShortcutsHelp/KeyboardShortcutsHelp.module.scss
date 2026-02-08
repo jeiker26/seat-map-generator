@@ -8,10 +8,7 @@
   max-width: 90vw;
   max-height: 85vh;
   overflow-y: auto;
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    0 4px 16px rgba(0, 0, 0, 0.12),
-    0 12px 40px rgba(0, 0, 0, 0.08);
+  box-shadow: $shadow-modal;
 
   &__overlay {
     position: fixed;
@@ -19,8 +16,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(4px);
+    background-color: $overlay-bg;
+    backdrop-filter: $overlay-blur;
     z-index: 1000;
   }
 
@@ -28,7 +25,7 @@
     margin: 0 0 $spacing-md;
     font-size: 15px;
     font-weight: 600;
-    color: #343a40;
+    color: $text-heading;
     letter-spacing: -0.01em;
   }
 
@@ -40,7 +37,7 @@
 
   &__group {
     padding-bottom: $spacing-sm + 4;
-    border-bottom: 1px solid #f1f3f5;
+    border-bottom: 1px solid $border-separator;
 
     &:last-child {
       border-bottom: none;
@@ -52,7 +49,7 @@
     margin: 0 0 $spacing-sm;
     font-size: 11px;
     font-weight: 600;
-    color: #868e96;
+    color: $text-muted;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -81,13 +78,13 @@
     align-items: center;
     justify-content: center;
     padding: 3px 7px;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
+    background-color: $bg-secondary;
+    border: 1px solid $border-default;
     border-radius: $radius-sm + 1;
     font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
     font-size: 11px;
     font-weight: 600;
-    color: #343a40;
+    color: $text-heading;
     min-width: 20px;
     text-align: center;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
@@ -97,12 +94,12 @@
     display: inline-block;
     margin: 0 2px;
     font-size: 10px;
-    color: #adb5bd;
+    color: $text-disabled;
   }
 
   &__description {
     font-size: 12px;
-    color: #495057;
+    color: $text-body;
   }
 
   &__actions {
@@ -111,23 +108,23 @@
     gap: $spacing-sm;
     margin-top: $spacing-md + 4;
     padding-top: $spacing-md;
-    border-top: 1px solid #f1f3f5;
+    border-top: 1px solid $border-separator;
   }
 
   &__btn--primary {
     padding: 7px $spacing-md;
-    border: 1px solid #339af0;
-    border-radius: $radius-sm + 4;
-    background-color: #339af0;
-    color: #ffffff;
+    border: 1px solid $color-primary;
+    border-radius: $radius-md;
+    background-color: $color-primary;
+    color: $bg-primary;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     transition: all $transition-fast;
 
     &:hover {
-      background-color: #228be6;
-      border-color: #228be6;
+      background-color: $color-primary-hover;
+      border-color: $color-primary-hover;
     }
   }
 }
