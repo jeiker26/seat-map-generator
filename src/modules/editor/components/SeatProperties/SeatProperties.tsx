@@ -10,8 +10,12 @@ const SeatProperties = () => {
   const seatMap = useEditorState((s) => s.seatMap)
   const selectedSeats = useEditorState((s) => s.selectedSeats)
   const updateSeat = useEditorState((s) => s.updateSeat)
+  const updateSeats = useEditorState((s) => s.updateSeats)
   const deleteSeat = useEditorState((s) => s.deleteSeat)
+  const deleteSeats = useEditorState((s) => s.deleteSeats)
   const clearSelection = useEditorState((s) => s.clearSelection)
+
+  const categories = seatMap?.categories || []
 
   const selectedSeat = useMemo(() => {
     if (selectedSeats.length !== 1 || !seatMap) {
@@ -36,6 +40,28 @@ const SeatProperties = () => {
       }
     },
     [selectedSeat, updateSeat],
+  )
+
+  const handleCategoryChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const categoryId = e.target.value || undefined
+      if (selectedSeats.length === 1 && selectedSeat) {
+        updateSeat(selectedSeat.id, { categoryId })
+      } else if (selectedSeats.length > 1) {
+        updateSeats(selectedSeats, { categoryId })
+      }
+    },
+    [selectedSeat, selectedSeats, updateSeat, updateSeats],
+  )
+
+  const handleBulkStatusChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const status = e.target.value as SeatStatus
+      if (selectedSeats.length > 1) {
+        updateSeats(selectedSeats, { status })
+      }
+    },
+    [selectedSeats, updateSeats],
   )
 
   const handleWidthChange = useCallback(
@@ -63,24 +89,90 @@ const SeatProperties = () => {
   )
 
   const handleDelete = useCallback(() => {
-    selectedSeats.forEach((id) => deleteSeat(id))
+    if (selectedSeats.length > 1) {
+      deleteSeats(selectedSeats)
+    } else {
+      selectedSeats.forEach((id) => deleteSeat(id))
+    }
     clearSelection()
-  }, [selectedSeats, deleteSeat, clearSelection])
+  }, [selectedSeats, deleteSeat, deleteSeats, clearSelection])
 
-  if (!selectedSeat) {
+  if (selectedSeats.length === 0) {
     return (
       <div className={styles['seat-properties']}>
-        <p className={styles['seat-properties__empty']}>
-          {selectedSeats.length > 1 ? `${selectedSeats.length} seats selected` : 'No seat selected'}
-        </p>
-        {selectedSeats.length > 1 && (
-          <button className={styles['seat-properties__delete']} onClick={handleDelete} type="button">
-            Delete Selected ({selectedSeats.length})
-          </button>
-        )}
+        <p className={styles['seat-properties__empty']}>No seat selected</p>
       </div>
     )
   }
+
+  if (selectedSeats.length > 1) {
+    const commonCategoryId = (() => {
+      if (!seatMap) {
+        return ''
+      }
+      const selected = seatMap.seats.filter((s) => selectedSeats.includes(s.id))
+      const firstCat = selected[0]?.categoryId || ''
+      return selected.every((s) => (s.categoryId || '') === firstCat) ? firstCat : ''
+    })()
+
+    return (
+      <div className={styles['seat-properties']}>
+        <h3 className={styles['seat-properties__title']}>{selectedSeats.length} Seats Selected</h3>
+
+        {categories.length > 0 && (
+          <div className={styles['seat-properties__field']}>
+            <label htmlFor="bulk-category" className={styles['seat-properties__label']}>
+              Category
+            </label>
+            <select
+              id="bulk-category"
+              value={commonCategoryId}
+              onChange={handleCategoryChange}
+              className={styles['seat-properties__select']}
+            >
+              <option value="">No category</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        <div className={styles['seat-properties__field']}>
+          <label htmlFor="bulk-status" className={styles['seat-properties__label']}>
+            Status
+          </label>
+          <select
+            id="bulk-status"
+            onChange={handleBulkStatusChange}
+            className={styles['seat-properties__select']}
+            defaultValue=""
+          >
+            <option value="" disabled>
+              Set status...
+            </option>
+            {STATUS_OPTIONS.map((status) => (
+              <option key={status} value={status}>
+                {status.charAt(0).toUpperCase() + status.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button className={styles['seat-properties__delete']} onClick={handleDelete} type="button">
+          Delete Selected ({selectedSeats.length})
+        </button>
+      </div>
+    )
+  }
+
+  if (!selectedSeat) {
+    return null
+  }
+
+  const currentCategory = categories.find((c) => c.id === selectedSeat.categoryId)
 
   return (
     <div className={styles['seat-properties']}>
@@ -118,12 +210,53 @@ const SeatProperties = () => {
         </select>
       </div>
 
+      {categories.length > 0 && (
+        <div className={styles['seat-properties__field']}>
+          <label htmlFor="seat-category" className={styles['seat-properties__label']}>
+            Category
+          </label>
+          <div className={styles['seat-properties__category-field']}>
+            <select
+              id="seat-category"
+              value={selectedSeat.categoryId || ''}
+              onChange={handleCategoryChange}
+              className={styles['seat-properties__select']}
+            >
+              <option value="">No category</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+            {currentCategory && (
+              <span
+                className={styles['seat-properties__category-swatch']}
+                style={{
+                  backgroundColor: currentCategory.color,
+                  borderColor: currentCategory.borderColor || currentCategory.color,
+                }}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
       <div className={styles['seat-properties__field']}>
         <span className={styles['seat-properties__label']}>Position</span>
         <span className={styles['seat-properties__value']}>
           x: {selectedSeat.x.toFixed(4)}, y: {selectedSeat.y.toFixed(4)}
         </span>
       </div>
+
+      {selectedSeat.row !== undefined && (
+        <div className={styles['seat-properties__field']}>
+          <span className={styles['seat-properties__label']}>Row / Column</span>
+          <span className={styles['seat-properties__value']}>
+            Row {selectedSeat.row}, Col {selectedSeat.column ?? '-'}
+          </span>
+        </div>
+      )}
 
       <div className={styles['seat-properties__row']}>
         <div className={styles['seat-properties__field']}>

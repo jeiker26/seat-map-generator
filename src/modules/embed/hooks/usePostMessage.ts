@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react'
 import { EmbedEvent, HostCommand } from '../../core/types'
 
 interface UsePostMessageOptions {
-  onCommand?: (command: HostCommand) => void
+  onCommand?: (_command: HostCommand) => void
 }
 
 export const usePostMessage = ({ onCommand }: UsePostMessageOptions = {}) => {

@@ -1,15 +1,20 @@
+import Konva from 'konva'
 import { useCallback, useMemo } from 'react'
 import { Group, Rect, Text } from 'react-konva'
 
-import { MIN_FONT_SIZE } from '../../../core/constants'
-import { Seat as SeatType, SeatStatus } from '../../../core/types'
+import { MIN_FONT_SIZE, STATUS_OPACITY } from '../../../core/constants'
+import { Seat as SeatType, SeatCategory, SeatStatus } from '../../../core/types'
 
-const STATUS_COLORS: Record<SeatStatus, string> = {
+const FALLBACK_STATUS_COLORS: Record<SeatStatus, string> = {
   available: '#4CAF50',
   reserved: '#FFC107',
   sold: '#F44336',
   blocked: '#9E9E9E',
 }
+
+const _DEFAULT_SEAT_COLOR = '#E8E8E8'
+const _DEFAULT_BORDER_COLOR = '#BDBDBD'
+const DEFAULT_TEXT_COLOR = '#424242'
 
 interface SeatProps {
   seat: SeatType
@@ -18,8 +23,9 @@ interface SeatProps {
   isSelected?: boolean
   isEditable?: boolean
   showLabel?: boolean
-  onClick?: (seatId: string) => void
-  onDragEnd?: (seatId: string, x: number, y: number) => void
+  category?: SeatCategory
+  onClick?: (_seatId: string, _event?: MouseEvent) => void
+  onDragEnd?: (_seatId: string, _x: number, _y: number) => void
 }
 
 const SeatComponent = ({
@@ -29,6 +35,7 @@ const SeatComponent = ({
   isSelected = false,
   isEditable = false,
   showLabel = true,
+  category,
   onClick,
   onDragEnd,
 }: SeatProps) => {
@@ -38,14 +45,49 @@ const SeatComponent = ({
   const pixelW = seat.w * uniformScale
   const pixelH = seat.h * uniformScale
 
+  const status = seat.status || 'available'
+  const opacity = STATUS_OPACITY[status] ?? 1
+
   const fillColor = useMemo(() => {
     if (isSelected) {
       return '#2196F3'
     }
-    return STATUS_COLORS[seat.status || 'available']
-  }, [isSelected, seat.status])
+    if (category) {
+      return category.color
+    }
+    return FALLBACK_STATUS_COLORS[status]
+  }, [isSelected, category, status])
 
-  const handleClick = useCallback(() => {
+  const strokeColor = useMemo(() => {
+    if (isSelected) {
+      return '#1565C0'
+    }
+    if (category) {
+      return category.borderColor || category.color
+    }
+    return '#333333'
+  }, [isSelected, category])
+
+  const textColor = useMemo(() => {
+    if (isSelected) {
+      return '#ffffff'
+    }
+    if (category) {
+      return category.textColor || DEFAULT_TEXT_COLOR
+    }
+    return '#ffffff'
+  }, [isSelected, category])
+
+  const handleClick = useCallback(
+    (e: Konva.KonvaEventObject<MouseEvent>) => {
+      if (onClick) {
+        onClick(seat.id, e.evt)
+      }
+    },
+    [onClick, seat.id],
+  )
+
+  const handleTap = useCallback(() => {
     if (onClick) {
       onClick(seat.id)
     }
@@ -69,17 +111,18 @@ const SeatComponent = ({
       draggable={isEditable}
       onDragEnd={handleDragEnd}
       onClick={handleClick}
-      onTap={handleClick}
+      onTap={handleTap}
       rotation={seat.r || 0}
+      opacity={isSelected ? 1 : opacity}
     >
       <Rect
         width={pixelW}
         height={pixelH}
         fill={fillColor}
-        stroke={isSelected ? '#1565C0' : '#333333'}
+        stroke={strokeColor}
         strokeWidth={isSelected ? 2 : 1}
         cornerRadius={3}
-        shadowColor="rgba(0,0,0,0.2)"
+        shadowColor="rgba(0,0,0,0.15)"
         shadowBlur={isSelected ? 6 : 2}
         shadowOffset={{ x: 1, y: 1 }}
       />
@@ -91,7 +134,7 @@ const SeatComponent = ({
           align="center"
           verticalAlign="middle"
           fontSize={Math.max(Math.min(pixelW, pixelH) * 0.4, MIN_FONT_SIZE)}
-          fill="#ffffff"
+          fill={textColor}
           listening={false}
         />
       )}

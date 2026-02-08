@@ -5,6 +5,7 @@ import { DEFAULT_SEAT_SIZE, MAX_BACKGROUND_SIZE_BYTES, MAX_BACKGROUND_SIZE_MB } 
 import { Seat, SeatMap } from '../../../core/types'
 import { useEditorState } from '../../hooks/useEditorState'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
+import CategoryManager from '../CategoryManager/CategoryManager'
 import GridGenerator from '../GridGenerator/GridGenerator'
 import SeatProperties from '../SeatProperties/SeatProperties'
 import Toolbar from '../Toolbar/Toolbar'
@@ -21,6 +22,8 @@ const DEFAULT_SEATMAP: SeatMap = {
   background: { url: '', width: 800, height: 600 },
   seats: [],
   zones: [],
+  categories: [],
+  elements: [],
   settings: { allowMultiSelect: true, showLabels: true, theme: 'light' },
 }
 
@@ -31,11 +34,14 @@ const Editor = () => {
   const setSeatMap = useEditorState((s) => s.setSeatMap)
   const addSeat = useEditorState((s) => s.addSeat)
   const updateSeat = useEditorState((s) => s.updateSeat)
+  const updateElement = useEditorState((s) => s.updateElement)
   const selectSeat = useEditorState((s) => s.selectSeat)
+  const deselectSeat = useEditorState((s) => s.deselectSeat)
   const clearSelection = useEditorState((s) => s.clearSelection)
   const setActiveTool = useEditorState((s) => s.setActiveTool)
 
   const [isGridOpen, setIsGridOpen] = useState(false)
+  const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
   const [backgroundError, setBackgroundError] = useState<string | null>(null)
 
@@ -72,13 +78,23 @@ const Editor = () => {
   )
 
   const handleSeatClick = useCallback(
-    (seatId: string) => {
+    (seatId: string, event?: MouseEvent) => {
       if (activeTool === 'select') {
-        clearSelection()
-        selectSeat(seatId)
+        const isShiftHeld = event?.shiftKey ?? false
+
+        if (isShiftHeld) {
+          if (selectedSeats.includes(seatId)) {
+            deselectSeat(seatId)
+          } else {
+            selectSeat(seatId)
+          }
+        } else {
+          clearSelection()
+          selectSeat(seatId)
+        }
       }
     },
-    [activeTool, clearSelection, selectSeat],
+    [activeTool, selectedSeats, clearSelection, selectSeat, deselectSeat],
   )
 
   const handleSeatDragEnd = useCallback(
@@ -87,6 +103,17 @@ const Editor = () => {
     },
     [updateSeat],
   )
+
+  const handleElementDragEnd = useCallback(
+    (elementId: string, x: number, y: number) => {
+      updateElement(elementId, { x, y })
+    },
+    [updateElement],
+  )
+
+  const handleOpenCategories = useCallback(() => {
+    setIsCategoryManagerOpen(true)
+  }, [])
 
   const handleExport = useCallback(() => {
     if (!seatMap) {
@@ -209,6 +236,7 @@ const Editor = () => {
         onImport={handleImport}
         onUploadBackground={handleUploadBackground}
         onRemoveBackground={handleRemoveBackground}
+        onOpenCategories={handleOpenCategories}
         hasBackground={Boolean(seatMap.background?.url)}
       />
       <div className={styles.editor__content}>
@@ -226,6 +254,7 @@ const Editor = () => {
             onSeatClick={handleSeatClick}
             onSeatDragEnd={handleSeatDragEnd}
             onStageClick={handleStageClick}
+            onElementDragEnd={handleElementDragEnd}
           />
           {isDragOver && <div className={styles['editor__drop-overlay']}>Drop image to set as background</div>}
           {backgroundError && (
@@ -245,6 +274,7 @@ const Editor = () => {
         <SeatProperties />
       </div>
       <GridGenerator isOpen={isGridOpen} onClose={() => setIsGridOpen(false)} />
+      <CategoryManager isOpen={isCategoryManagerOpen} onClose={() => setIsCategoryManagerOpen(false)} />
     </div>
   )
 }

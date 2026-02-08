@@ -49,6 +49,7 @@
     font-size: 13px;
     color: #333333;
     background-color: #ffffff;
+    box-sizing: border-box;
 
     &:focus {
       outline: none;
@@ -61,6 +62,21 @@
     font-size: 12px;
     color: #666666;
     font-family: monospace;
+  }
+
+  &__category-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__category-swatch {
+    display: inline-block;
+    width: 20px;
+    height: 16px;
+    border-radius: 3px;
+    border: 2px solid;
+    flex-shrink: 0;
   }
 
   &__delete {

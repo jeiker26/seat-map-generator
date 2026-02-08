@@ -1,3 +1,4 @@
+export { CategoryManager } from './components/CategoryManager'
 export { Editor } from './components/Editor'
 export { GridGenerator } from './components/GridGenerator'
 export { SeatProperties } from './components/SeatProperties'

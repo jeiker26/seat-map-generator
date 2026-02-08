@@ -14,13 +14,21 @@ const TOOLS: { id: EditorTool; label: string; shortcut: string }[] = [
 
 interface ToolbarProps {
   onExport?: () => void
-  onImport?: (data: string) => void
-  onUploadBackground?: (file: File) => void
+  onImport?: (_data: string) => void
+  onUploadBackground?: (_file: File) => void
   onRemoveBackground?: () => void
+  onOpenCategories?: () => void
   hasBackground?: boolean
 }
 
-const Toolbar = ({ onExport, onImport, onUploadBackground, onRemoveBackground, hasBackground = false }: ToolbarProps) => {
+const Toolbar = ({
+  onExport,
+  onImport,
+  onUploadBackground,
+  onRemoveBackground,
+  onOpenCategories,
+  hasBackground = false,
+}: ToolbarProps) => {
   const activeTool = useEditorState((s) => s.activeTool)
   const setActiveTool = useEditorState((s) => s.setActiveTool)
   const { undo, redo, canUndo, canRedo } = useUndoRedo()
@@ -87,13 +95,7 @@ const Toolbar = ({ onExport, onImport, onUploadBackground, onRemoveBackground, h
       <div className={styles.toolbar__separator} />
 
       <div className={styles.toolbar__actions}>
-        <button
-          className={styles.toolbar__btn}
-          onClick={undo}
-          disabled={!canUndo}
-          title="Undo (Ctrl+Z)"
-          type="button"
-        >
+        <button className={styles.toolbar__btn} onClick={undo} disabled={!canUndo} title="Undo (Ctrl+Z)" type="button">
           Undo
         </button>
         <button
@@ -110,25 +112,32 @@ const Toolbar = ({ onExport, onImport, onUploadBackground, onRemoveBackground, h
       <div className={styles.toolbar__separator} />
 
       <div className={styles.toolbar__actions}>
+        <button className={styles.toolbar__btn} onClick={onOpenCategories} title="Manage Categories (C)" type="button">
+          Categories
+        </button>
+      </div>
+
+      <div className={styles.toolbar__separator} />
+
+      <div className={styles.toolbar__actions}>
         <button className={styles.toolbar__btn} onClick={onExport} title="Export JSON" type="button">
           Export
         </button>
         <button className={styles.toolbar__btn} onClick={handleImportClick} title="Import JSON" type="button">
           Import
         </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".json"
-          onChange={handleFileChange}
-          style={{ display: 'none' }}
-        />
+        <input ref={fileInputRef} type="file" accept=".json" onChange={handleFileChange} style={{ display: 'none' }} />
       </div>
 
       <div className={styles.toolbar__separator} />
 
       <div className={styles.toolbar__actions}>
-        <button className={styles.toolbar__btn} onClick={handleUploadBgClick} title="Upload Background Image" type="button">
+        <button
+          className={styles.toolbar__btn}
+          onClick={handleUploadBgClick}
+          title="Upload Background Image"
+          type="button"
+        >
           Background
         </button>
         {hasBackground && (

@@ -1,9 +1,13 @@
 import Konva from 'konva'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Layer, Stage } from 'react-konva'
 
-import { SeatMap } from '../../../core/types'
+import { SeatCategory, SeatMap } from '../../../core/types'
 import Background from '../Background/Background'
+import ColumnHeaders from '../ColumnHeaders/ColumnHeaders'
+import Legend from '../Legend/Legend'
+import MapElements from '../MapElements/MapElements'
+import RowNumbers from '../RowNumbers/RowNumbers'
 import SeatComponent from '../Seat/Seat'
 import ZoneComponent from '../Zone/Zone'
 
@@ -12,9 +16,10 @@ interface CanvasProps {
   isEditable?: boolean
   selectedSeats?: string[]
   showLabels?: boolean
-  onSeatClick?: (seatId: string) => void
-  onSeatDragEnd?: (seatId: string, x: number, y: number) => void
-  onStageClick?: (x: number, y: number) => void
+  onSeatClick?: (_seatId: string, _event?: MouseEvent) => void
+  onSeatDragEnd?: (_seatId: string, _x: number, _y: number) => void
+  onStageClick?: (_x: number, _y: number) => void
+  onElementDragEnd?: (_elementId: string, _x: number, _y: number) => void
 }
 
 const Canvas = ({
@@ -25,6 +30,7 @@ const Canvas = ({
   onSeatClick,
   onSeatDragEnd,
   onStageClick,
+  onElementDragEnd,
 }: CanvasProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Konva.Stage>(null)
@@ -105,10 +111,22 @@ const Canvas = ({
     [onStageClick, position, scale, dimensions],
   )
 
-  const { background, seats, zones } = seatMap
+  const { background, seats, zones, categories, elements, gridConfig, settings } = seatMap
+
+  const categoryMap = useMemo(() => {
+    const map = new Map<string, SeatCategory>()
+    if (categories) {
+      categories.forEach((cat) => map.set(cat.id, cat))
+    }
+    return map
+  }, [categories])
+
+  const showRowNumbers = settings?.showRowNumbers ?? gridConfig?.rowNumbersVisible ?? false
+  const showColumnHeaders = settings?.showColumnHeaders ?? gridConfig?.columnHeadersVisible ?? false
+  const showLegend = settings?.showLegend ?? (categories && categories.length > 0)
 
   return (
-    <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+    <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative' }}>
       <Stage
         ref={stageRef}
         width={dimensions.width}
@@ -123,9 +141,7 @@ const Canvas = ({
         onClick={handleStageClick}
       >
         <Layer>
-          {background?.url && (
-            <Background url={background.url} width={dimensions.width} height={dimensions.height} />
-          )}
+          {background?.url && <Background url={background.url} width={dimensions.width} height={dimensions.height} />}
         </Layer>
         <Layer>
           {zones?.map((zone) => {
@@ -149,6 +165,28 @@ const Canvas = ({
           })}
         </Layer>
         <Layer>
+          {showRowNumbers && (
+            <RowNumbers seats={seats} containerWidth={dimensions.width} containerHeight={dimensions.height} />
+          )}
+          {showColumnHeaders && (
+            <ColumnHeaders
+              seats={seats}
+              columnLabels={gridConfig?.columnLabels}
+              containerWidth={dimensions.width}
+              containerHeight={dimensions.height}
+            />
+          )}
+          {elements && elements.length > 0 && (
+            <MapElements
+              elements={elements}
+              containerWidth={dimensions.width}
+              containerHeight={dimensions.height}
+              isEditable={isEditable}
+              onElementDragEnd={onElementDragEnd}
+            />
+          )}
+        </Layer>
+        <Layer>
           {seats.map((seat) => (
             <SeatComponent
               key={seat.id}
@@ -158,12 +196,14 @@ const Canvas = ({
               isSelected={selectedSeats.includes(seat.id)}
               isEditable={isEditable}
               showLabel={showLabels}
+              category={seat.categoryId ? categoryMap.get(seat.categoryId) : undefined}
               onClick={onSeatClick}
               onDragEnd={onSeatDragEnd}
             />
           ))}
         </Layer>
       </Stage>
+      {showLegend && categories && categories.length > 0 && <Legend categories={categories} />}
     </div>
   )
 }
