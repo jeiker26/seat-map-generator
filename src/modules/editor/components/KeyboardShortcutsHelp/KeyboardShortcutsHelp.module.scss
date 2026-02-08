@@ -1,12 +1,17 @@
+@use '@/styles/variables' as *;
+
 .shortcuts-help {
-  background-color: #ffffff;
-  border-radius: 8px;
-  padding: 24px;
+  background-color: $bg-primary;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
   width: 520px;
   max-width: 90vw;
   max-height: 85vh;
   overflow-y: auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    0 12px 40px rgba(0, 0, 0, 0.08);
 
   &__overlay {
     position: fixed;
@@ -14,26 +19,28 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
     z-index: 1000;
   }
 
   &__title {
-    margin: 0 0 20px;
-    font-size: 16px;
+    margin: 0 0 $spacing-md;
+    font-size: 15px;
     font-weight: 600;
-    color: #333333;
+    color: #343a40;
+    letter-spacing: -0.01em;
   }
 
   &__groups {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: $spacing-md;
   }
 
   &__group {
-    padding-bottom: 12px;
-    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: $spacing-sm + 4;
+    border-bottom: 1px solid #f1f3f5;
 
     &:last-child {
       border-bottom: none;
@@ -42,10 +49,10 @@
   }
 
   &__group-title {
-    margin: 0 0 8px;
-    font-size: 13px;
+    margin: 0 0 $spacing-sm;
+    font-size: 11px;
     font-weight: 600;
-    color: #555555;
+    color: #868e96;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -53,14 +60,14 @@
   &__list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: $spacing-xs + 2;
   }
 
   &__item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 4px 0;
+    padding: 3px 0;
   }
 
   &__keys {
@@ -70,55 +77,57 @@
   }
 
   &__kbd {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 3px 7px;
-    background-color: #f5f5f5;
-    border: 1px solid #d0d0d0;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 12px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: $radius-sm + 1;
+    font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
+    font-size: 11px;
     font-weight: 600;
-    color: #333333;
+    color: #343a40;
     min-width: 20px;
     text-align: center;
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
   }
 
   &__plus {
     display: inline-block;
     margin: 0 2px;
-    font-size: 11px;
-    color: #999999;
+    font-size: 10px;
+    color: #adb5bd;
   }
 
   &__description {
-    font-size: 13px;
-    color: #555555;
+    font-size: 12px;
+    color: #495057;
   }
 
   &__actions {
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px solid #e0e0e0;
+    gap: $spacing-sm;
+    margin-top: $spacing-md + 4;
+    padding-top: $spacing-md;
+    border-top: 1px solid #f1f3f5;
   }
 
   &__btn--primary {
-    padding: 8px 16px;
-    border: 1px solid #2196f3;
-    border-radius: 4px;
-    background-color: #2196f3;
+    padding: 7px $spacing-md;
+    border: 1px solid #339af0;
+    border-radius: $radius-sm + 4;
+    background-color: #339af0;
     color: #ffffff;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all $transition-fast;
 
     &:hover {
-      background-color: #1976d2;
-      border-color: #1976d2;
+      background-color: #228be6;
+      border-color: #228be6;
     }
   }
 }
