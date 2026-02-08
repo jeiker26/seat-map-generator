@@ -4,10 +4,11 @@ import { useCallback, useEffect, useState } from 'react'
 import { DEFAULT_SEAT_SIZE, MAX_BACKGROUND_SIZE_BYTES, MAX_BACKGROUND_SIZE_MB } from '../../../core/constants'
 import { Seat, SeatMap } from '../../../core/types'
 import { useEditorState } from '../../hooks/useEditorState'
-import { OPEN_CATEGORIES_EVENT, useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
+import { OPEN_CATEGORIES_EVENT, OPEN_HELP_EVENT, useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
 import { createEmptySeatMap, downloadJson, importFromJson } from '../../services'
 import CategoryManager from '../CategoryManager/CategoryManager'
 import GridGenerator from '../GridGenerator/GridGenerator'
+import KeyboardShortcutsHelp from '../KeyboardShortcutsHelp/KeyboardShortcutsHelp'
 import SeatProperties from '../SeatProperties/SeatProperties'
 import Toolbar from '../Toolbar/Toolbar'
 import styles from './Editor.module.scss'
@@ -22,7 +23,7 @@ const Editor = () => {
   const activeTool = useEditorState((s) => s.activeTool)
   const setSeatMap = useEditorState((s) => s.setSeatMap)
   const addSeat = useEditorState((s) => s.addSeat)
-  const updateSeat = useEditorState((s) => s.updateSeat)
+  const moveSeats = useEditorState((s) => s.moveSeats)
   const updateElement = useEditorState((s) => s.updateElement)
   const selectSeat = useEditorState((s) => s.selectSeat)
   const selectSeats = useEditorState((s) => s.selectSeats)
@@ -33,6 +34,7 @@ const Editor = () => {
 
   const [isGridOpen, setIsGridOpen] = useState(false)
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false)
+  const [isHelpOpen, setIsHelpOpen] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
   const [backgroundError, setBackgroundError] = useState<string | null>(null)
 
@@ -42,6 +44,12 @@ const Editor = () => {
     const handleOpenCategories = () => setIsCategoryManagerOpen(true)
     window.addEventListener(OPEN_CATEGORIES_EVENT, handleOpenCategories)
     return () => window.removeEventListener(OPEN_CATEGORIES_EVENT, handleOpenCategories)
+  }, [])
+
+  useEffect(() => {
+    const handleOpenHelp = () => setIsHelpOpen(true)
+    window.addEventListener(OPEN_HELP_EVENT, handleOpenHelp)
+    return () => window.removeEventListener(OPEN_HELP_EVENT, handleOpenHelp)
   }, [])
 
   if (!seatMap) {
@@ -94,11 +102,15 @@ const Editor = () => {
     [activeTool, selectedSeats, clearSelection, selectSeat, deselectSeat],
   )
 
-  const handleSeatDragEnd = useCallback(
-    (seatId: string, x: number, y: number) => {
-      updateSeat(seatId, { x, y })
+  const handleGroupDragEnd = useCallback(
+    (draggedSeatId: string, deltaX: number, deltaY: number) => {
+      if (selectedSeats.length > 1 && selectedSeats.includes(draggedSeatId)) {
+        moveSeats(selectedSeats, deltaX, deltaY)
+      } else {
+        moveSeats([draggedSeatId], deltaX, deltaY)
+      }
     },
-    [updateSeat],
+    [selectedSeats, moveSeats],
   )
 
   const handleElementDragEnd = useCallback(
@@ -110,6 +122,10 @@ const Editor = () => {
 
   const handleOpenCategories = useCallback(() => {
     setIsCategoryManagerOpen(true)
+  }, [])
+
+  const handleOpenHelp = useCallback(() => {
+    setIsHelpOpen(true)
   }, [])
 
   const handleLassoSelect = useCallback(
@@ -263,6 +279,7 @@ const Editor = () => {
         onRemoveBackground={handleRemoveBackground}
         onOpenCategories={handleOpenCategories}
         onToggleBackgroundLock={handleToggleBackgroundLock}
+        onOpenHelp={handleOpenHelp}
         hasBackground={Boolean(seatMap.background?.url)}
         isBackgroundLocked={isBackgroundLocked}
       />
@@ -280,7 +297,7 @@ const Editor = () => {
             showLabels={seatMap.settings?.showLabels ?? true}
             activeTool={activeTool}
             onSeatClick={handleSeatClick}
-            onSeatDragEnd={handleSeatDragEnd}
+            onGroupDragEnd={handleGroupDragEnd}
             onStageClick={handleStageClick}
             onElementDragEnd={handleElementDragEnd}
             onLassoSelect={handleLassoSelect}
@@ -306,6 +323,7 @@ const Editor = () => {
       </div>
       <GridGenerator isOpen={isGridOpen} onClose={() => setIsGridOpen(false)} />
       <CategoryManager isOpen={isCategoryManagerOpen} onClose={() => setIsCategoryManagerOpen(false)} />
+      <KeyboardShortcutsHelp isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </div>
   )
 }

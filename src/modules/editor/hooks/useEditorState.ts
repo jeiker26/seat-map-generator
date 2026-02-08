@@ -79,6 +79,41 @@ export const useEditorState = create<EditorStore>((set, get) => ({
     set({ seatMap: updatedMap, ...historyData, isDirty: true })
   },
 
+  moveSeats: (ids: string[], deltaX: number, deltaY: number) => {
+    const { seatMap, history, historyIndex } = get()
+    if (!seatMap || ids.length === 0) {
+      return
+    }
+    const idSet = new Set(ids)
+    const updatedSeats = seatMap.seats.map((s) => {
+      if (!idSet.has(s.id)) {
+        return s
+      }
+      return { ...s, x: s.x + deltaX, y: s.y + deltaY }
+    })
+    const updatedMap = { ...seatMap, seats: updatedSeats, updatedAt: new Date().toISOString() }
+    const historyData = pushToHistory(history, historyIndex, updatedMap)
+    set({ seatMap: updatedMap, ...historyData, isDirty: true })
+  },
+
+  batchUpdateSeats: (updates: Array<{ id: string; updates: Partial<Seat> }>) => {
+    const { seatMap, history, historyIndex } = get()
+    if (!seatMap || updates.length === 0) {
+      return
+    }
+    const updateMap = new Map(updates.map((u) => [u.id, u.updates]))
+    const updatedSeats = seatMap.seats.map((s) => {
+      const seatUpdates = updateMap.get(s.id)
+      if (!seatUpdates) {
+        return s
+      }
+      return { ...s, ...seatUpdates }
+    })
+    const updatedMap = { ...seatMap, seats: updatedSeats, updatedAt: new Date().toISOString() }
+    const historyData = pushToHistory(history, historyIndex, updatedMap)
+    set({ seatMap: updatedMap, ...historyData, isDirty: true })
+  },
+
   deleteSeat: (id: string) => {
     const { seatMap, history, historyIndex, selectedSeats } = get()
     if (!seatMap) {

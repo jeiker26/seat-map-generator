@@ -26,6 +26,7 @@ interface CanvasProps {
   activeTool?: EditorTool
   onSeatClick?: (_seatId: string, _event?: MouseEvent) => void
   onSeatDragEnd?: (_seatId: string, _x: number, _y: number) => void
+  onGroupDragEnd?: (_draggedSeatId: string, _deltaX: number, _deltaY: number) => void
   onStageClick?: (_x: number, _y: number) => void
   onElementDragEnd?: (_elementId: string, _x: number, _y: number) => void
   onSeatHover?: (_seatId: string, _pixelX: number, _pixelY: number) => void
@@ -43,6 +44,7 @@ const Canvas = ({
   activeTool,
   onSeatClick,
   onSeatDragEnd,
+  onGroupDragEnd,
   onStageClick,
   onElementDragEnd,
   onSeatHover,
@@ -58,6 +60,28 @@ const Canvas = ({
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [selectionRect, setSelectionRect] = useState<SelectionRect | null>(null)
   const isSelectingRef = useRef(false)
+  const dragStartRef = useRef<{ seatId: string; x: number; y: number } | null>(null)
+
+  const isSeatDraggable = isEditable && activeTool === 'select'
+
+  const handleSeatDragStart = useCallback((seatId: string, x: number, y: number) => {
+    dragStartRef.current = { seatId, x, y }
+  }, [])
+
+  const handleSeatDragEnd = useCallback(
+    (seatId: string, newX: number, newY: number) => {
+      const startPos = dragStartRef.current
+      if (startPos && onGroupDragEnd) {
+        const deltaX = newX - startPos.x
+        const deltaY = newY - startPos.y
+        onGroupDragEnd(seatId, deltaX, deltaY)
+      } else if (onSeatDragEnd) {
+        onSeatDragEnd(seatId, newX, newY)
+      }
+      dragStartRef.current = null
+    },
+    [onGroupDragEnd, onSeatDragEnd],
+  )
 
   useEffect(() => {
     const container = containerRef.current
@@ -348,10 +372,12 @@ const Canvas = ({
               containerHeight={dimensions.height}
               isSelected={selectedSeats.includes(seat.id)}
               isEditable={isEditable}
+              isDraggable={isSeatDraggable}
               showLabel={showLabels}
               category={seat.categoryId ? categoryMap.get(seat.categoryId) : undefined}
               onClick={onSeatClick}
-              onDragEnd={onSeatDragEnd}
+              onDragStart={handleSeatDragStart}
+              onDragEnd={handleSeatDragEnd}
               onMouseEnter={onSeatHover}
               onMouseLeave={onSeatHoverEnd}
             />

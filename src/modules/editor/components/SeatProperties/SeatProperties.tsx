@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 
-import { SeatStatus } from '../../../core/types'
+import { Seat, SeatStatus } from '../../../core/types'
 import { useEditorState } from '../../hooks/useEditorState'
 import styles from './SeatProperties.module.scss'
 
@@ -11,6 +11,7 @@ const SeatProperties = () => {
   const selectedSeats = useEditorState((s) => s.selectedSeats)
   const updateSeat = useEditorState((s) => s.updateSeat)
   const updateSeats = useEditorState((s) => s.updateSeats)
+  const batchUpdateSeats = useEditorState((s) => s.batchUpdateSeats)
   const deleteSeat = useEditorState((s) => s.deleteSeat)
   const deleteSeats = useEditorState((s) => s.deleteSeats)
   const clearSelection = useEditorState((s) => s.clearSelection)
@@ -23,6 +24,155 @@ const SeatProperties = () => {
     }
     return seatMap.seats.find((s) => s.id === selectedSeats[0]) || null
   }, [selectedSeats, seatMap])
+
+  const selectedSeatObjects = useMemo(() => {
+    if (!seatMap || selectedSeats.length < 2) {
+      return []
+    }
+    const idSet = new Set(selectedSeats)
+    return seatMap.seats.filter((s) => idSet.has(s.id))
+  }, [seatMap, selectedSeats])
+
+  // --- Alignment handlers ---
+  const handleAlignLeft = useCallback(() => {
+    if (selectedSeatObjects.length < 2) {
+      return
+    }
+    const minX = Math.min(...selectedSeatObjects.map((s) => s.x))
+    const updates = selectedSeatObjects.filter((s) => s.x !== minX).map((s) => ({ id: s.id, updates: { x: minX } }))
+    if (updates.length > 0) {
+      batchUpdateSeats(updates)
+    }
+  }, [selectedSeatObjects, batchUpdateSeats])
+
+  const handleAlignRight = useCallback(() => {
+    if (selectedSeatObjects.length < 2) {
+      return
+    }
+    const maxRight = Math.max(...selectedSeatObjects.map((s) => s.x + s.w))
+    const updates = selectedSeatObjects
+      .filter((s) => s.x + s.w !== maxRight)
+      .map((s) => ({ id: s.id, updates: { x: maxRight - s.w } }))
+    if (updates.length > 0) {
+      batchUpdateSeats(updates)
+    }
+  }, [selectedSeatObjects, batchUpdateSeats])
+
+  const handleAlignTop = useCallback(() => {
+    if (selectedSeatObjects.length < 2) {
+      return
+    }
+    const minY = Math.min(...selectedSeatObjects.map((s) => s.y))
+    const updates = selectedSeatObjects.filter((s) => s.y !== minY).map((s) => ({ id: s.id, updates: { y: minY } }))
+    if (updates.length > 0) {
+      batchUpdateSeats(updates)
+    }
+  }, [selectedSeatObjects, batchUpdateSeats])
+
+  const handleAlignBottom = useCallback(() => {
+    if (selectedSeatObjects.length < 2) {
+      return
+    }
+    const maxBottom = Math.max(...selectedSeatObjects.map((s) => s.y + s.h))
+    const updates = selectedSeatObjects
+      .filter((s) => s.y + s.h !== maxBottom)
+      .map((s) => ({ id: s.id, updates: { y: maxBottom - s.h } }))
+    if (updates.length > 0) {
+      batchUpdateSeats(updates)
+    }
+  }, [selectedSeatObjects, batchUpdateSeats])
+
+  const handleCenterHorizontal = useCallback(() => {
+    if (selectedSeatObjects.length < 2) {
+      return
+    }
+    const avgCenterX = selectedSeatObjects.reduce((sum, s) => sum + s.x + s.w / 2, 0) / selectedSeatObjects.length
+    const updates = selectedSeatObjects.map((s) => ({
+      id: s.id,
+      updates: { x: avgCenterX - s.w / 2 },
+    }))
+    batchUpdateSeats(updates)
+  }, [selectedSeatObjects, batchUpdateSeats])
+
+  const handleCenterVertical = useCallback(() => {
+    if (selectedSeatObjects.length < 2) {
+      return
+    }
+    const avgCenterY = selectedSeatObjects.reduce((sum, s) => sum + s.y + s.h / 2, 0) / selectedSeatObjects.length
+    const updates = selectedSeatObjects.map((s) => ({
+      id: s.id,
+      updates: { y: avgCenterY - s.h / 2 },
+    }))
+    batchUpdateSeats(updates)
+  }, [selectedSeatObjects, batchUpdateSeats])
+
+  // --- Distribution handlers ---
+  const handleDistributeHorizontal = useCallback(() => {
+    if (selectedSeatObjects.length < 3) {
+      return
+    }
+    const sorted = [...selectedSeatObjects].sort((a, b) => a.x - b.x)
+    const first = sorted[0]
+    const last = sorted[sorted.length - 1]
+    const totalSpan = last.x + last.w - first.x
+    const totalSeatWidth = sorted.reduce((sum, s) => sum + s.w, 0)
+    const gap = (totalSpan - totalSeatWidth) / (sorted.length - 1)
+    let currentX = first.x
+    const updates: Array<{ id: string; updates: Partial<Seat> }> = []
+    for (const seat of sorted) {
+      if (seat.x !== currentX) {
+        updates.push({ id: seat.id, updates: { x: currentX } })
+      }
+      currentX += seat.w + gap
+    }
+    if (updates.length > 0) {
+      batchUpdateSeats(updates)
+    }
+  }, [selectedSeatObjects, batchUpdateSeats])
+
+  const handleDistributeVertical = useCallback(() => {
+    if (selectedSeatObjects.length < 3) {
+      return
+    }
+    const sorted = [...selectedSeatObjects].sort((a, b) => a.y - b.y)
+    const first = sorted[0]
+    const last = sorted[sorted.length - 1]
+    const totalSpan = last.y + last.h - first.y
+    const totalSeatHeight = sorted.reduce((sum, s) => sum + s.h, 0)
+    const gap = (totalSpan - totalSeatHeight) / (sorted.length - 1)
+    let currentY = first.y
+    const updates: Array<{ id: string; updates: Partial<Seat> }> = []
+    for (const seat of sorted) {
+      if (seat.y !== currentY) {
+        updates.push({ id: seat.id, updates: { y: currentY } })
+      }
+      currentY += seat.h + gap
+    }
+    if (updates.length > 0) {
+      batchUpdateSeats(updates)
+    }
+  }, [selectedSeatObjects, batchUpdateSeats])
+
+  // --- Bulk size handlers ---
+  const handleBulkWidthChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = Number(e.target.value)
+      if (value >= 0.005 && value <= 0.5 && selectedSeats.length > 1) {
+        updateSeats(selectedSeats, { w: value })
+      }
+    },
+    [selectedSeats, updateSeats],
+  )
+
+  const handleBulkHeightChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = Number(e.target.value)
+      if (value >= 0.005 && value <= 0.5 && selectedSeats.length > 1) {
+        updateSeats(selectedSeats, { h: value })
+      }
+    },
+    [selectedSeats, updateSeats],
+  )
 
   const handleLabelChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,6 +309,120 @@ const SeatProperties = () => {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className={styles['seat-properties__section']}>
+          <span className={styles['seat-properties__section-title']}>Align</span>
+          <div className={styles['seat-properties__toolbar']}>
+            <button
+              className={styles['seat-properties__toolbar-btn']}
+              onClick={handleAlignLeft}
+              title="Align Left"
+              type="button"
+            >
+              ⫷ Left
+            </button>
+            <button
+              className={styles['seat-properties__toolbar-btn']}
+              onClick={handleCenterHorizontal}
+              title="Center Horizontal"
+              type="button"
+            >
+              ⫿ Center H
+            </button>
+            <button
+              className={styles['seat-properties__toolbar-btn']}
+              onClick={handleAlignRight}
+              title="Align Right"
+              type="button"
+            >
+              ⫸ Right
+            </button>
+            <button
+              className={styles['seat-properties__toolbar-btn']}
+              onClick={handleAlignTop}
+              title="Align Top"
+              type="button"
+            >
+              ⫠ Top
+            </button>
+            <button
+              className={styles['seat-properties__toolbar-btn']}
+              onClick={handleCenterVertical}
+              title="Center Vertical"
+              type="button"
+            >
+              ⫿ Center V
+            </button>
+            <button
+              className={styles['seat-properties__toolbar-btn']}
+              onClick={handleAlignBottom}
+              title="Align Bottom"
+              type="button"
+            >
+              ⫡ Bottom
+            </button>
+          </div>
+        </div>
+
+        <div className={styles['seat-properties__section']}>
+          <span className={styles['seat-properties__section-title']}>Distribute</span>
+          <div className={styles['seat-properties__toolbar']}>
+            <button
+              className={styles['seat-properties__toolbar-btn']}
+              onClick={handleDistributeHorizontal}
+              title="Distribute Horizontal (needs 3+ seats)"
+              type="button"
+              disabled={selectedSeats.length < 3}
+            >
+              ↔ Horizontal
+            </button>
+            <button
+              className={styles['seat-properties__toolbar-btn']}
+              onClick={handleDistributeVertical}
+              title="Distribute Vertical (needs 3+ seats)"
+              type="button"
+              disabled={selectedSeats.length < 3}
+            >
+              ↕ Vertical
+            </button>
+          </div>
+        </div>
+
+        <div className={styles['seat-properties__section']}>
+          <span className={styles['seat-properties__section-title']}>Size</span>
+          <div className={styles['seat-properties__row']}>
+            <div className={styles['seat-properties__field']}>
+              <label htmlFor="bulk-width" className={styles['seat-properties__label']}>
+                Width
+              </label>
+              <input
+                id="bulk-width"
+                type="number"
+                min={0.005}
+                max={0.5}
+                step={0.005}
+                onChange={handleBulkWidthChange}
+                className={styles['seat-properties__input']}
+                placeholder="W"
+              />
+            </div>
+            <div className={styles['seat-properties__field']}>
+              <label htmlFor="bulk-height" className={styles['seat-properties__label']}>
+                Height
+              </label>
+              <input
+                id="bulk-height"
+                type="number"
+                min={0.005}
+                max={0.5}
+                step={0.005}
+                onChange={handleBulkHeightChange}
+                className={styles['seat-properties__input']}
+                placeholder="H"
+              />
+            </div>
+          </div>
         </div>
 
         <button className={styles['seat-properties__delete']} onClick={handleDelete} type="button">

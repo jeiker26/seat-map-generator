@@ -618,4 +618,484 @@ describe('Editor Page', () => {
       })
     })
   })
+
+  describe('Keyboard Shortcuts Help Modal', () => {
+    it('should open help modal when ? button in toolbar is clicked', () => {
+      cy.get('button').contains('?').click()
+      cy.contains('Keyboard Shortcuts').should('be.visible')
+    })
+
+    it('should display shortcut groups in help modal', () => {
+      cy.get('button').contains('?').click()
+      cy.contains('Tools').should('be.visible')
+      cy.contains('Selection').should('be.visible')
+      cy.contains('Editing').should('be.visible')
+      cy.contains('History').should('be.visible')
+      cy.contains('General').should('be.visible')
+    })
+
+    it('should close help modal when Close button is clicked', () => {
+      cy.get('button').contains('?').click()
+      cy.contains('Keyboard Shortcuts').should('be.visible')
+
+      cy.get('button').contains('Close').click()
+      cy.contains('Keyboard Shortcuts').should('not.exist')
+    })
+
+    it('should open help modal with ? key shortcut', () => {
+      cy.get('body').trigger('keydown', { key: '?', code: 'Slash', shiftKey: true })
+      cy.contains('Keyboard Shortcuts').should('be.visible')
+    })
+
+    it('should display specific shortcut keys in help modal', () => {
+      cy.get('button').contains('?').click()
+      cy.contains('Select tool').should('be.visible')
+      cy.contains('Add seat tool').should('be.visible')
+      cy.contains('Pan tool').should('be.visible')
+      cy.contains('Undo').should('be.visible')
+      cy.contains('Redo').should('be.visible')
+      cy.contains('Select all seats').should('be.visible')
+      cy.contains('Duplicate selected seats').should('be.visible')
+      cy.contains('Nudge selected seats').should('be.visible')
+    })
+  })
+
+  describe('Select All - Ctrl+A', () => {
+    it('should select all seats with Ctrl+A after generating a grid', () => {
+      // Generate a grid of seats
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}3')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      // Press Ctrl+A to select all
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+
+      // Multi-select UI should appear showing "6 Seats Selected"
+      cy.contains('6 Seats Selected').should('be.visible')
+    })
+
+    it('should show alignment tools when multiple seats are selected', () => {
+      // Generate seats
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}3')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      // Select all
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+
+      // Alignment section should be visible
+      cy.contains('Align').should('be.visible')
+      cy.get('button').contains('Left').should('be.visible')
+      cy.get('button').contains('Right').should('be.visible')
+      cy.get('button').contains('Top').should('be.visible')
+      cy.get('button').contains('Bottom').should('be.visible')
+      cy.get('button').contains('Center H').should('be.visible')
+      cy.get('button').contains('Center V').should('be.visible')
+    })
+
+    it('should show distribution tools when multiple seats are selected', () => {
+      // Generate seats
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}3')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      // Select all
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+
+      // Distribution section should be visible
+      cy.contains('Distribute').should('be.visible')
+      cy.get('button').contains('Horizontal').should('be.visible')
+      cy.get('button').contains('Vertical').should('be.visible')
+    })
+
+    it('should show bulk size inputs when multiple seats are selected', () => {
+      // Generate seats
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}3')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      // Select all
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+
+      // Bulk size section should be visible
+      cy.contains('Size').should('be.visible')
+      cy.get('#bulk-width').should('be.visible')
+      cy.get('#bulk-height').should('be.visible')
+    })
+  })
+
+  describe('Duplicate - Ctrl+D', () => {
+    it('should duplicate selected seats with Ctrl+D', () => {
+      // Generate a small grid
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}1')
+      cy.get('#grid-cols').type('{selectall}2')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      // Select all seats
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.contains('2 Seats Selected').should('be.visible')
+
+      // Duplicate with Ctrl+D
+      cy.get('body').trigger('keydown', { key: 'd', code: 'KeyD', ctrlKey: true })
+
+      // After duplicating, the new seats should be selected (2 new seats)
+      cy.contains('2 Seats Selected').should('be.visible')
+
+      // Verify total seats by selecting all
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.contains('4 Seats Selected').should('be.visible')
+    })
+  })
+
+  describe('Delete Shortcut - Batch Delete', () => {
+    it('should delete all selected seats with Delete key', () => {
+      // Generate seats
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}2')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      // Select all seats
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.contains('4 Seats Selected').should('be.visible')
+
+      // Delete with Delete key
+      cy.get('body').trigger('keydown', { key: 'Delete', code: 'Delete' })
+
+      // Should show "No seat selected" since all seats are deleted
+      cy.contains('No seat selected').should('be.visible')
+
+      // Undo should be enabled
+      cy.get('button').contains('Undo').should('not.be.disabled')
+    })
+
+    it('should undo batch delete and restore all seats', () => {
+      // Generate seats
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}2')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      // Select all and delete
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('body').trigger('keydown', { key: 'Delete', code: 'Delete' })
+      cy.contains('No seat selected').should('be.visible')
+
+      // Undo — should bring back all 4 seats
+      cy.get('body').trigger('keydown', { key: 'z', code: 'KeyZ', ctrlKey: true })
+
+      // Select all again to verify seats are back
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.contains('4 Seats Selected').should('be.visible')
+    })
+  })
+
+  describe('Escape Key', () => {
+    it('should deselect all seats when Escape is pressed', () => {
+      // Generate and select seats
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}2')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.contains('4 Seats Selected').should('be.visible')
+
+      // Press Escape
+      cy.get('body').trigger('keydown', { key: 'Escape', code: 'Escape' })
+      cy.contains('No seat selected').should('be.visible')
+    })
+  })
+
+  describe('Alignment Tools', () => {
+    it('should align selected seats to the left', () => {
+      // Generate seats
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}1')
+      cy.get('#grid-cols').type('{selectall}3')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      // Select all
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.contains('3 Seats Selected').should('be.visible')
+
+      // Click Align Left
+      cy.get('button[title="Align Left"]').click()
+
+      // Undo should be enabled (alignment created a history entry)
+      cy.get('button').contains('Undo').should('not.be.disabled')
+    })
+
+    it('should align selected seats to the right', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}1')
+      cy.get('#grid-cols').type('{selectall}3')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('button[title="Align Right"]').click()
+      cy.get('button').contains('Undo').should('not.be.disabled')
+    })
+
+    it('should align selected seats to the top', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}3')
+      cy.get('#grid-cols').type('{selectall}1')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('button[title="Align Top"]').click()
+      cy.get('button').contains('Undo').should('not.be.disabled')
+    })
+
+    it('should align selected seats to the bottom', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}3')
+      cy.get('#grid-cols').type('{selectall}1')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('button[title="Align Bottom"]').click()
+      cy.get('button').contains('Undo').should('not.be.disabled')
+    })
+
+    it('should center selected seats horizontally', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}1')
+      cy.get('#grid-cols').type('{selectall}3')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('button[title="Center Horizontal"]').click()
+      cy.get('button').contains('Undo').should('not.be.disabled')
+    })
+
+    it('should center selected seats vertically', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}3')
+      cy.get('#grid-cols').type('{selectall}1')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('button[title="Center Vertical"]').click()
+      cy.get('button').contains('Undo').should('not.be.disabled')
+    })
+  })
+
+  describe('Distribution Tools', () => {
+    it('should disable distribute buttons when fewer than 3 seats are selected', () => {
+      // Generate 2 seats only
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}1')
+      cy.get('#grid-cols').type('{selectall}2')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      // Select all (2 seats)
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.contains('2 Seats Selected').should('be.visible')
+
+      // Distribution buttons should be disabled
+      cy.get('button[title*="Distribute Horizontal"]').should('be.disabled')
+      cy.get('button[title*="Distribute Vertical"]').should('be.disabled')
+    })
+
+    it('should enable distribute buttons when 3+ seats are selected', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}1')
+      cy.get('#grid-cols').type('{selectall}3')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.contains('3 Seats Selected').should('be.visible')
+
+      // Distribution buttons should be enabled
+      cy.get('button[title*="Distribute Horizontal"]').should('not.be.disabled')
+      cy.get('button[title*="Distribute Vertical"]').should('not.be.disabled')
+    })
+
+    it('should distribute selected seats horizontally', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}1')
+      cy.get('#grid-cols').type('{selectall}4')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('button[title*="Distribute Horizontal"]').click()
+      cy.get('button').contains('Undo').should('not.be.disabled')
+    })
+
+    it('should distribute selected seats vertically', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}4')
+      cy.get('#grid-cols').type('{selectall}1')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('button[title*="Distribute Vertical"]').click()
+      cy.get('button').contains('Undo').should('not.be.disabled')
+    })
+  })
+
+  describe('Bulk Size Controls', () => {
+    it('should display bulk width and height inputs when multiple seats are selected', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}2')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.contains('4 Seats Selected').should('be.visible')
+
+      cy.get('#bulk-width').should('be.visible')
+      cy.get('#bulk-height').should('be.visible')
+    })
+
+    it('should update all selected seats width via bulk input', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}2')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('#bulk-width').type('0.03')
+      cy.get('button').contains('Undo').should('not.be.disabled')
+    })
+
+    it('should update all selected seats height via bulk input', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}2')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('#bulk-height').type('0.04')
+      cy.get('button').contains('Undo').should('not.be.disabled')
+    })
+  })
+
+  describe('Multi-select Delete Button', () => {
+    it('should show delete button with seat count in multi-select mode', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}3')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('button').contains('Delete Selected (6)').should('be.visible')
+    })
+
+    it('should delete all selected seats via delete button', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}2')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('button').contains('Delete Selected (4)').click()
+      cy.contains('No seat selected').should('be.visible')
+    })
+  })
+
+  describe('Bulk Status and Category in Multi-select', () => {
+    it('should display bulk status dropdown when multiple seats are selected', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}2')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('#bulk-status').should('be.visible')
+    })
+
+    it('should change status for all selected seats via bulk dropdown', () => {
+      cy.get('button').contains('Grid').click()
+      cy.get('.konvajs-content canvas').first().click(400, 300, { force: true })
+      cy.get('#grid-rows').type('{selectall}2')
+      cy.get('#grid-cols').type('{selectall}2')
+      cy.get('button')
+        .contains(/Generate \d+ Seats/)
+        .click()
+
+      cy.get('body').trigger('keydown', { key: 'a', code: 'KeyA', ctrlKey: true })
+      cy.get('#bulk-status').select('Reserved')
+      cy.get('button').contains('Undo').should('not.be.disabled')
+    })
+  })
 })

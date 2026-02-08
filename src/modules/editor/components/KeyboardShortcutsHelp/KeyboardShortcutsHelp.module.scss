@@ -1,0 +1,124 @@
+.shortcuts-help {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+  width: 520px;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+  }
+
+  &__title {
+    margin: 0 0 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333333;
+  }
+
+  &__groups {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__group {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+
+  &__group-title {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+  }
+
+  &__keys {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  &__kbd {
+    display: inline-block;
+    padding: 3px 7px;
+    background-color: #f5f5f5;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: #333333;
+    min-width: 20px;
+    text-align: center;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  &__plus {
+    display: inline-block;
+    margin: 0 2px;
+    font-size: 11px;
+    color: #999999;
+  }
+
+  &__description {
+    font-size: 13px;
+    color: #555555;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  &__btn--primary {
+    padding: 8px 16px;
+    border: 1px solid #2196f3;
+    border-radius: 4px;
+    background-color: #2196f3;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background-color: #1976d2;
+      border-color: #1976d2;
+    }
+  }
+}

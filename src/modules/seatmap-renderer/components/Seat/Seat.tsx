@@ -22,9 +22,11 @@ interface SeatProps {
   containerHeight: number
   isSelected?: boolean
   isEditable?: boolean
+  isDraggable?: boolean
   showLabel?: boolean
   category?: SeatCategory
   onClick?: (_seatId: string, _event?: MouseEvent) => void
+  onDragStart?: (_seatId: string, _x: number, _y: number) => void
   onDragEnd?: (_seatId: string, _x: number, _y: number) => void
   onMouseEnter?: (_seatId: string, _pixelX: number, _pixelY: number) => void
   onMouseLeave?: (_seatId: string) => void
@@ -35,10 +37,12 @@ const SeatComponent = ({
   containerWidth,
   containerHeight,
   isSelected = false,
-  isEditable = false,
+  isEditable: _isEditable = false,
+  isDraggable = false,
   showLabel = true,
   category,
   onClick,
+  onDragStart,
   onDragEnd,
   onMouseEnter,
   onMouseLeave,
@@ -97,6 +101,12 @@ const SeatComponent = ({
     }
   }, [onClick, seat.id])
 
+  const handleDragStart = useCallback(() => {
+    if (onDragStart) {
+      onDragStart(seat.id, seat.x, seat.y)
+    }
+  }, [onDragStart, seat.id, seat.x, seat.y])
+
   const handleDragEnd = useCallback(
     (e: any) => {
       if (onDragEnd) {
@@ -144,7 +154,8 @@ const SeatComponent = ({
     <Group
       x={pixelX}
       y={pixelY}
-      draggable={isEditable}
+      draggable={isDraggable}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={handleClick}
       onTap={handleTap}

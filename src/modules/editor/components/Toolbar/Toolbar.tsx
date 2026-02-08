@@ -19,6 +19,7 @@ interface ToolbarProps {
   onRemoveBackground?: () => void
   onOpenCategories?: () => void
   onToggleBackgroundLock?: () => void
+  onOpenHelp?: () => void
   hasBackground?: boolean
   isBackgroundLocked?: boolean
 }
@@ -30,6 +31,7 @@ const Toolbar = ({
   onRemoveBackground,
   onOpenCategories,
   onToggleBackgroundLock,
+  onOpenHelp,
   hasBackground = false,
   isBackgroundLocked = true,
 }: ToolbarProps) => {
@@ -175,6 +177,14 @@ const Toolbar = ({
           onChange={handleBgFileChange}
           style={{ display: 'none' }}
         />
+      </div>
+
+      <div className={styles.toolbar__separator} />
+
+      <div className={styles.toolbar__actions}>
+        <button className={styles.toolbar__btn} onClick={onOpenHelp} title="Keyboard Shortcuts (?)" type="button">
+          ?
+        </button>
       </div>
     </div>
   )

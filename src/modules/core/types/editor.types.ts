@@ -17,6 +17,8 @@ export interface EditorActions {
   addSeats: (_seats: Seat[]) => void
   updateSeat: (_id: string, _updates: Partial<Seat>) => void
   updateSeats: (_ids: string[], _updates: Partial<Seat>) => void
+  moveSeats: (_ids: string[], _deltaX: number, _deltaY: number) => void
+  batchUpdateSeats: (_updates: Array<{ id: string; updates: Partial<Seat> }>) => void
   deleteSeat: (_id: string) => void
   deleteSeats: (_ids: string[]) => void
   selectSeat: (_id: string) => void

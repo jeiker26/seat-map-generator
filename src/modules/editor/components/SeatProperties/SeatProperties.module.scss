@@ -79,6 +79,52 @@
     flex-shrink: 0;
   }
 
+  &__section {
+    margin-bottom: 12px;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  &__section-title {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #999999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  &__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  &__toolbar-btn {
+    padding: 4px 8px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #555555;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      background-color: #e3f2fd;
+      border-color: #2196f3;
+      color: #1565c0;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+  }
+
   &__delete {
     width: 100%;
     padding: 8px;
