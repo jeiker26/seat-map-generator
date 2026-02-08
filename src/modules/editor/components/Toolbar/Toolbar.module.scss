@@ -1,0 +1,55 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  &__tools {
+    display: flex;
+    gap: 4px;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  &__btn {
+    padding: 6px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #333333;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+
+    &:hover:not(:disabled) {
+      background-color: #f0f0f0;
+      border-color: #b0b0b0;
+    }
+
+    &--active {
+      background-color: #e3f2fd;
+      border-color: #2196f3;
+      color: #1565c0;
+      font-weight: 600;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+
+  &__separator {
+    width: 1px;
+    height: 24px;
+    background-color: #e0e0e0;
+    margin: 0 4px;
+  }
+}

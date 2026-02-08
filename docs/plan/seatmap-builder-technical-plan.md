@@ -84,9 +84,9 @@ Build a system composed of two main parts:
 ### Frontend
 | Category | Technology |
 |----------|------------|
-| Framework | Next.js 15 |
+| Framework | Next.js 16 |
 | Language | TypeScript |
-| Canvas | Konva.js + react-konva |
+| Canvas | Konva.js 9 + react-konva 19 |
 | State | Zustand |
 | Styling | Sass + CSS Modules |
 
@@ -144,26 +144,26 @@ See detailed schemas in [Frontend Plan](./frontend-plan.md#4--data-model).
 ### Phase 1: Foundation
 | Frontend | Backend |
 |----------|---------|
-| Project setup | Docker Compose setup |
-| Module structure | PostgreSQL + MinIO |
-| Konva basic setup | Prisma schema |
-| Responsive canvas | Health endpoints |
+| ~~Project setup~~ | Docker Compose setup |
+| ~~Module structure~~ | PostgreSQL + MinIO |
+| ~~Konva basic setup~~ | Prisma schema |
+| ~~Responsive canvas~~ | Health endpoints |
 
 ### Phase 2: Core Features
 | Frontend | Backend |
 |----------|---------|
-| Editor tools (add/move/delete) | Maps CRUD API |
-| Grid generator | Image upload endpoint |
-| JSON export/import | API key auth |
-| Undo/Redo | Validation |
+| ~~Editor tools (add/move/delete)~~ | Maps CRUD API |
+| ~~Grid generator~~ | Image upload endpoint |
+| ~~JSON export/import~~ | API key auth |
+| ~~Undo/Redo~~ | Validation |
 
 ### Phase 3: Embed & Polish
 | Frontend | Backend |
 |----------|---------|
-| Embed renderer | Bulk operations |
-| postMessage protocol | Rate limiting |
+| ~~Embed renderer~~ | Bulk operations |
+| ~~postMessage protocol~~ | Rate limiting |
 | Keyboard navigation | API docs |
-| E2E tests | Production Docker |
+| ~~E2E tests~~ | Production Docker |
 
 ### Phase 4: Production Ready
 | Frontend | Backend |

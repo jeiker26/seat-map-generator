@@ -84,7 +84,7 @@ src/
 
 | Category | Technology |
 |----------|------------|
-| Framework | Next.js 15 |
+| Framework | Next.js 16 |
 | Language | TypeScript |
 | Canvas | Konva.js + react-konva |
 | State | Zustand |
@@ -153,16 +153,16 @@ export interface Zone {
 
 ### MVP Scope
 
-- [ ] Upload background image (drag & drop)
-- [ ] Zoom / Pan (mouse wheel + drag)
-- [ ] Add seat by click
-- [ ] Move / Delete seat
-- [ ] Grid generator tool
-- [ ] Auto numbering (row/column patterns)
-- [ ] Export JSON
-- [ ] Import JSON
-- [ ] Undo / Redo (Ctrl+Z / Ctrl+Shift+Z)
-- [ ] Keyboard shortcuts
+- [x] Upload background image (drag & drop)
+- [x] Zoom / Pan (mouse wheel + drag)
+- [x] Add seat by click
+- [x] Move / Delete seat
+- [x] Grid generator tool
+- [x] Auto numbering (row/column patterns)
+- [x] Export JSON
+- [x] Import JSON
+- [x] Undo / Redo (Ctrl+Z / Ctrl+Shift+Z)
+- [x] Keyboard shortcuts
 
 ### Phase 2
 
@@ -263,37 +263,37 @@ export type HostCommand =
 
 ### Sprint 1 - Core Foundation
 
-- [ ] Project setup (Next.js + TypeScript + Sass)
-- [ ] Module structure creation
-- [ ] Data model + TypeScript types
-- [ ] Zod schemas for validation
-- [ ] Konva basic setup
-- [ ] Responsive canvas component
-- [ ] Basic zoom/pan functionality
-- [ ] Coordinate transformation utils
+- [x] Project setup (Next.js + TypeScript + Sass)
+- [x] Module structure creation
+- [x] Data model + TypeScript types
+- [x] Zod schemas for validation
+- [x] Konva basic setup
+- [x] Responsive canvas component
+- [x] Basic zoom/pan functionality
+- [x] Coordinate transformation utils
 
 ### Sprint 2 - Functional Editor
 
-- [ ] Background image upload (drag & drop)
-- [ ] Toolbar component
-- [ ] Add seat by click
-- [ ] Move seat (drag)
-- [ ] Delete seat (keyboard + button)
-- [ ] Grid generator modal
-- [ ] Auto numbering logic
-- [ ] JSON export / import
-- [ ] Zustand store setup
-- [ ] Undo / Redo stack
-- [ ] Keyboard shortcuts
+- [x] Background image upload (drag & drop)
+- [x] Toolbar component
+- [x] Add seat by click
+- [x] Move seat (drag)
+- [x] Delete seat (keyboard + button)
+- [x] Grid generator modal
+- [x] Auto numbering logic
+- [x] JSON export / import
+- [x] Zustand store setup
+- [x] Undo / Redo stack
+- [x] Keyboard shortcuts
 
 ### Sprint 3 - Stable Embed
 
-- [ ] Embed page route
-- [ ] Renderer component
-- [ ] postMessage hook
-- [ ] Responsive scaling
-- [ ] Click handlers
-- [ ] Hover tooltips
+- [x] Embed page route
+- [x] Renderer component
+- [x] postMessage hook
+- [x] Responsive scaling
+- [x] Click handlers
+- [x] Hover tooltips
 - [ ] Keyboard navigation (a11y)
 - [ ] Theme support (light/dark)
 
@@ -316,11 +316,13 @@ export type HostCommand =
 - Zustand store actions
 - Utility functions
 
-### E2E Tests (Cypress)
+### E2E Tests (Cypress) - 38 tests, all passing
 
-- **Editor**: Upload → Add seats → Grid → Export
-- **Embed**: Load → Select → Verify events
-- **iframe**: Bidirectional communication
+| Spec | Tests | Coverage |
+|------|-------|----------|
+| `home.cy.ts` | 5 | Page rendering, navigation, meta |
+| `editor.cy.ts` | 23 | Toolbar, tools, canvas, grid generator, export/import, undo/redo, keyboard shortcuts |
+| `embed.cy.ts` | 10 | Loading/error states, canvas rendering, API mocking, edit page flow |
 
 ### Visual Regression
 
@@ -361,11 +363,11 @@ export type HostCommand =
 ```json
 {
   "dependencies": {
-    "next": "^15.0.0",
+    "next": "^16.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "konva": "^9.0.0",
-    "react-konva": "^18.0.0",
+    "react-konva": "^19.2.2",
     "zustand": "^4.5.0",
     "@use-gesture/react": "^10.3.0",
     "zod": "^3.23.0",
@@ -373,8 +375,10 @@ export type HostCommand =
   },
   "devDependencies": {
     "typescript": "^5.4.0",
-    "cypress": "^13.0.0",
-    "@types/react": "^18.3.0",
+    "cypress": "^15.10.0",
+    "eslint": "^9.39.0",
+    "eslint-config-next": "^16.1.6",
+    "@types/react": "^19.0.0",
     "@types/node": "^20.0.0"
   }
 }
@@ -384,14 +388,14 @@ export type HostCommand =
 
 ## 12. 🎯 MVP Checklist
 
-- [ ] Editor: Upload background
-- [ ] Editor: Add/move/delete seats
-- [ ] Editor: Grid generator
-- [ ] Editor: JSON export/import
-- [ ] Editor: Undo/Redo
-- [ ] Embed: Render map from API
-- [ ] Embed: Click selection
-- [ ] Embed: postMessage events
+- [x] Editor: Upload background
+- [x] Editor: Add/move/delete seats
+- [x] Editor: Grid generator
+- [x] Editor: JSON export/import
+- [x] Editor: Undo/Redo
+- [x] Embed: Render map from API
+- [x] Embed: Click selection
+- [x] Embed: postMessage events
 - [ ] Responsive on all devices
 - [ ] Basic keyboard navigation
 

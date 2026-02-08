@@ -1,0 +1,25 @@
+.seat-tooltip {
+  position: absolute;
+  background-color: #333333;
+  color: #ffffff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: opacity 0.15s ease;
+  z-index: 100;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  &__label {
+    font-weight: 600;
+  }
+
+  &__status {
+    text-transform: capitalize;
+    opacity: 0.8;
+    font-size: 11px;
+  }
+}

@@ -1,0 +1,11 @@
+.embed-renderer {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background-color: #ffffff;
+
+  &--dark {
+    background-color: #1a1a1a;
+  }
+}
