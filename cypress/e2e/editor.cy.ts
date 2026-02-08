@@ -1098,4 +1098,21 @@ describe('Editor Page', () => {
       cy.get('button[title*="Undo"]').should('not.be.disabled')
     })
   })
+
+  describe('Zoom Indicator', () => {
+    it('should display zoom indicator at 100% by default', () => {
+      cy.get('[data-testid="zoom-indicator"]', { timeout: 15000 }).should('be.visible').and('contain.text', '100%')
+    })
+
+    it('should reset zoom to 100% when clicked', () => {
+      cy.get('[data-testid="zoom-indicator"]', { timeout: 15000 }).should('contain.text', '100%')
+      // Click the indicator to reset (already at 100%, should stay)
+      cy.get('[data-testid="zoom-indicator"]').click()
+      cy.get('[data-testid="zoom-indicator"]').should('contain.text', '100%')
+    })
+
+    it('should have reset zoom tooltip', () => {
+      cy.get('[data-testid="zoom-indicator"]', { timeout: 15000 }).should('have.attr', 'title', 'Reset zoom to 100%')
+    })
+  })
 })

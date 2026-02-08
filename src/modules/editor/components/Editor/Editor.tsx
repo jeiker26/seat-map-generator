@@ -292,6 +292,7 @@ const Editor = () => {
             onLassoSelect={handleLassoSelect}
             onBackgroundDragEnd={handleBackgroundDragEnd}
             onBackgroundTransformEnd={handleBackgroundTransformEnd}
+            showZoomIndicator
           />
           <Toolbar
             onExport={handleExport}

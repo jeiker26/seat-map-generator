@@ -34,6 +34,7 @@ interface CanvasProps {
   onLassoSelect?: (_seatIds: string[], _additive: boolean) => void
   onBackgroundDragEnd?: (_x: number, _y: number) => void
   onBackgroundTransformEnd?: (_x: number, _y: number, _scale: number) => void
+  showZoomIndicator?: boolean
 }
 
 const Canvas = ({
@@ -52,6 +53,7 @@ const Canvas = ({
   onLassoSelect,
   onBackgroundDragEnd,
   onBackgroundTransformEnd,
+  showZoomIndicator = false,
 }: CanvasProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Konva.Stage>(null)
@@ -438,6 +440,40 @@ const Canvas = ({
         )}
       </Stage>
       {showLegend && categories && categories.length > 0 && <Legend categories={categories} />}
+      {showZoomIndicator && (
+        <button
+          type="button"
+          data-testid="zoom-indicator"
+          onClick={() => {
+            setScale(1)
+            setPosition({ x: 0, y: 0 })
+          }}
+          style={{
+            position: 'absolute',
+            bottom: 16,
+            left: 16,
+            zIndex: 100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '4px 10px',
+            backgroundColor: '#ffffff',
+            borderRadius: 8,
+            border: 'none',
+            boxShadow: '0 0 0 1px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.08)',
+            fontSize: 12,
+            fontWeight: 500,
+            color: '#495057',
+            cursor: 'pointer',
+            fontFamily: "'SF Mono', Monaco, Menlo, monospace",
+            lineHeight: 1,
+            userSelect: 'none',
+          }}
+          title="Reset zoom to 100%"
+        >
+          {Math.round(scale * 100)}%
+        </button>
+      )}
     </div>
   )
 }
