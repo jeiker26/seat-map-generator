@@ -157,6 +157,15 @@ See detailed schemas in [Frontend Plan](./frontend-plan.md#4--data-model).
 | ~~JSON export/import~~ | API key auth |
 | ~~Undo/Redo~~ | Validation |
 
+### Phase 2.5: Background & Seat Size
+| Frontend | Backend |
+|----------|---------|
+| Background upload button + remove | - |
+| Background aspect ratio rendering | - |
+| Configurable seat dimensions (w/h) | - |
+| Global default seat size setting | - |
+| Seat aspect ratio distortion fix | - |
+
 ### Phase 3: Embed & Polish
 | Frontend | Backend |
 |----------|---------|

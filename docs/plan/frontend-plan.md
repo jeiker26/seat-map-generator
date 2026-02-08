@@ -164,6 +164,24 @@ export interface Zone {
 - [x] Undo / Redo (Ctrl+Z / Ctrl+Shift+Z)
 - [x] Keyboard shortcuts
 
+### MVP Improvements (Next Sprint)
+
+#### Background Image Enhancements
+- [ ] Upload button in Toolbar (file picker, in addition to drag-and-drop)
+- [ ] Remove background button (clear current image)
+- [ ] Preserve aspect ratio when rendering (use `fitToContainer()` utility)
+- [ ] File size validation (max 10MB) with user feedback
+- [ ] Error feedback when image fails to load
+- [ ] Fix Zod schema: allow empty string for `background.url` (no image state)
+
+#### Default Seat Size & Dimensions
+- [ ] Use `DEFAULT_SEAT_SIZE` constant instead of hardcoded `0.02` in Editor and GridGenerator
+- [ ] Add w/h fields to SeatProperties panel (editable seat dimensions)
+- [ ] Add seat size controls in GridGenerator (configure size of generated seats)
+- [ ] Global default seat size setting in `SeatMapSettings` (persisted per map)
+- [ ] Fix aspect ratio distortion: normalize seat dimensions relative to the shortest container axis so seats render as squares when w === h
+- [ ] Minimum font size floor for seat labels (prevent unreadable text below 8px)
+
 ### Phase 2
 
 - [ ] Multi-selection (Shift+click, drag select)
@@ -286,6 +304,21 @@ export type HostCommand =
 - [x] Undo / Redo stack
 - [x] Keyboard shortcuts
 
+### Sprint 2.5 - Background & Seat Size Improvements
+
+- [ ] Toolbar: Upload background button (file picker)
+- [ ] Toolbar: Remove background button
+- [ ] Background rendering: preserve aspect ratio via `fitToContainer()`
+- [ ] Background upload: file size validation (max 10MB) + error feedback
+- [ ] Background load error: user-facing error message
+- [ ] Fix Zod schema: `background.url` allow empty string (no image state)
+- [ ] Refactor: use `DEFAULT_SEAT_SIZE` constant in Editor + GridGenerator
+- [ ] SeatProperties: add editable width/height fields
+- [ ] GridGenerator: add seat size inputs (width/height for generated seats)
+- [ ] SeatMapSettings: add `defaultSeatSize` field (global per-map default)
+- [ ] Fix seat aspect ratio distortion (uniform normalization)
+- [ ] Seat label: minimum font size floor (8px)
+
 ### Sprint 3 - Stable Embed
 
 - [x] Embed page route
@@ -388,9 +421,14 @@ export type HostCommand =
 
 ## 12. 🎯 MVP Checklist
 
-- [x] Editor: Upload background
+- [x] Editor: Upload background (drag & drop)
+- [ ] Editor: Upload background (file picker button)
+- [ ] Editor: Remove background
+- [ ] Editor: Background respects aspect ratio
 - [x] Editor: Add/move/delete seats
 - [x] Editor: Grid generator
+- [ ] Editor: Configurable seat size (SeatProperties + GridGenerator)
+- [ ] Editor: Global default seat size setting
 - [x] Editor: JSON export/import
 - [x] Editor: Undo/Redo
 - [x] Embed: Render map from API
